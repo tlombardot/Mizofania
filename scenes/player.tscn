@@ -26,8 +26,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_3vyb7"]
-radius = 6.0827627
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qlg0r"]
+size = Vector2(10, 3.5)
 
 [node name="Player" type="CharacterBody2D" unique_id=1233679312]
 script = ExtResource("1_3vyb7")
@@ -41,4 +41,5 @@ frame_progress = 0.46823108
 centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1637455380]
-shape = SubResource("CircleShape2D_3vyb7")
+position = Vector2(0, -1.75)
+shape = SubResource("RectangleShape2D_qlg0r")
