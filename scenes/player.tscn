@@ -42,6 +42,16 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_3vyb7"]
 radius = 2.0
 
+[sub_resource type="Gradient" id="Gradient_g2els"]
+offsets = PackedFloat32Array(0, 0.38554215, 0.41566265, 0.42168674, 0.4759036, 0.52409637)
+colors = PackedColorArray(1, 1, 1, 1, 0.13207543, 0.13207543, 0.13207543, 1, 0.05100234, 0.05100234, 0.05100234, 1, 0.036494523, 0.036494523, 0.036494523, 1, 0.023049174, 0.023049174, 0.023049174, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_qhqgy"]
+gradient = SubResource("Gradient_g2els")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
+
 [node name="Player" type="CharacterBody2D" unique_id=1233679312]
 script = ExtResource("1_3vyb7")
 
@@ -49,7 +59,11 @@ script = ExtResource("1_3vyb7")
 sprite_frames = SubResource("SpriteFrames_u8vuu")
 animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.485372
+frame_progress = 0.52307045
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1637455380]
 shape = SubResource("CircleShape2D_3vyb7")
+
+[node name="Sonar" type="PointLight2D" parent="." unique_id=995813666]
+scale = Vector2(5, 5)
+texture = SubResource("GradientTexture2D_qhqgy")
