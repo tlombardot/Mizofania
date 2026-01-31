@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://d4anc04dih35d"]
+[gd_scene format=3 uid="uid://cr6xfljtov2a7"]
 
-[ext_resource type="Script" path="res://scripts/orc.gd" id="1_bfp0d"]
+[ext_resource type="Script" uid="uid://gqmpvvm5wfom" path="res://scripts/orc.gd" id="1_bfp0d"]
 [ext_resource type="Texture2D" uid="uid://cdbje68ui64sl" path="res://assets/Characters(100x100)/Orc/Orc/Orc-Idle.png" id="2_hu8b3"]
 [ext_resource type="Texture2D" uid="uid://dbfm6jv37elku" path="res://assets/Characters(100x100)/Orc/Orc/Orc-Walk.png" id="3_s5mlm"]
 
@@ -116,7 +116,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2byfh"]
-size = Vector2(13, 3)
+size = Vector2(5, 3)
 
 [node name="Orc" type="CharacterBody2D" unique_id=608689109 groups=["ennemi"]]
 z_index = 1
@@ -131,5 +131,17 @@ autoplay = "idle"
 frame_progress = 0.24142131
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1532172233]
-position = Vector2(0, -1)
+position = Vector2(0.5, -1)
 shape = SubResource("RectangleShape2D_2byfh")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=477617216]
+target_desired_distance = 20.0
+debug_enabled = true
+
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=964472646]
+position = Vector2(0, -31)
+target_position = Vector2(0, 31)
+
+[node name="Timer" type="Timer" parent="." unique_id=1033635358]
+wait_time = 5.0
+one_shot = true
