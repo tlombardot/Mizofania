@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Mizofania"
-run/main_scene="uid://ce3e6qkiswtr5"
+run/main_scene="uid://bd4783aqb4i3m"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [global_group]
 
 player=""
+ennemi=""
 
 [input]
 
