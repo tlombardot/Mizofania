@@ -14,11 +14,11 @@ func _on_body_entered(body):
 			player_ref.prendre_corps(body)
 		queue_free()
 		
-	# 2. SI C'EST LE JOUEUR (On ignore, pour pas se tirer dessus soi-même)
+	# SI C'EST LE JOUEUR (On ignore, pour pas se tirer dessus soi-même)
 	elif body == player_ref:
 		pass # On ne fait rien
 		
-	# 3. SI C'EST N'IMPORTE QUOI D'AUTRE (Donc un mur, un sol, une table...)
+	# SI C'EST N'IMPORTE QUOI D'AUTRE (Donc un mur, un sol, une table...)
 	else:
 		# On détruit le masque car il a tapé un obstacle
 		queue_free()

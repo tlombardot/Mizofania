@@ -115,8 +115,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2byfh"]
-size = Vector2(5, 3)
+[sub_resource type="CircleShape2D" id="CircleShape2D_hu8b3"]
+radius = 8.0
 
 [node name="Orc" type="CharacterBody2D" unique_id=608689109 groups=["ennemi"]]
 z_index = 1
@@ -131,16 +131,20 @@ autoplay = "idle"
 frame_progress = 0.24142131
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1532172233]
-position = Vector2(0.5, -1)
-shape = SubResource("RectangleShape2D_2byfh")
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_hu8b3")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=477617216]
 target_desired_distance = 20.0
+path_postprocessing = 1
+simplify_epsilon = 5.005
+avoidance_enabled = true
+radius = 5.0
 debug_enabled = true
 
-[node name="RayCast2D" type="RayCast2D" parent="." unique_id=964472646]
-position = Vector2(0, -31)
-target_position = Vector2(0, 31)
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=220680770]
+position = Vector2(0, -15)
+collide_with_bodies = false
 
 [node name="Timer" type="Timer" parent="." unique_id=1033635358]
 wait_time = 5.0
