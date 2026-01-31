@@ -37,9 +37,13 @@ position = Vector2(-9, -15)
 sprite_frames = SubResource("SpriteFrames_u8vuu")
 animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.49599853
+frame_progress = 0.6849567
 centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1637455380]
 position = Vector2(-0.5, -1)
 shape = SubResource("RectangleShape2D_qlg0r")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2112284556]
+position = Vector2(-0.5, -1)
+zoom = Vector2(4, 4)
