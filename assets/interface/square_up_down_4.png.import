@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jeayxhvgs5he"
-path="res://.godot/imported/square_up_down_4.png-0ed9e2ff3b6fe0fe6cf3d6c2cc6ff046.ctex"
+uid="uid://daueujbh4o153"
+path="res://.godot/imported/square_up_down_4.png-b50b290ca71f32f1b610914b9bbc84ff.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/interface/square_up_down_4.png"
-dest_files=["res://.godot/imported/square_up_down_4.png-0ed9e2ff3b6fe0fe6cf3d6c2cc6ff046.ctex"]
+source_file="res://assets/Interface/square_up_down_4.png"
+dest_files=["res://.godot/imported/square_up_down_4.png-b50b290ca71f32f1b610914b9bbc84ff.ctex"]
 
 [params]
 
