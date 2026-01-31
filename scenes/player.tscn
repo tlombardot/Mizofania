@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cegyb6qot5ih4"]
 
 [ext_resource type="Script" uid="uid://e2flklwmqekx" path="res://scripts/player.gd" id="1_3vyb7"]
-[ext_resource type="Texture2D" uid="uid://8mb6fcqfu2dy" path="res://assets/Character_animation/monsters_idle/skull/v2/skull_v2_1.png" id="2_qlg0r"]
-[ext_resource type="Texture2D" uid="uid://b6p0cl515ahpy" path="res://assets/Character_animation/monsters_idle/skull/v2/skull_v2_2.png" id="3_tuyoq"]
-[ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Character_animation/monsters_idle/skull/v2/skull_v2_3.png" id="4_fjrip"]
-[ext_resource type="Texture2D" uid="uid://djm0b2rag4opu" path="res://assets/Character_animation/monsters_idle/skull/v2/skull_v2_4.png" id="5_smehm"]
+[ext_resource type="Texture2D" uid="uid://c2rcw54m8ntru" path="res://assets/Character_animation/priests_idle/priest2/v1/priest2_v1_1.png" id="2_qlg0r"]
+[ext_resource type="Texture2D" uid="uid://xa2x7k7lop6j" path="res://assets/Character_animation/priests_idle/priest2/v1/priest2_v1_2.png" id="3_tuyoq"]
+[ext_resource type="Texture2D" uid="uid://bfaqltbslsb6q" path="res://assets/Character_animation/priests_idle/priest2/v1/priest2_v1_3.png" id="4_fjrip"]
+[ext_resource type="Texture2D" uid="uid://jndehg1au2nc" path="res://assets/Character_animation/priests_idle/priest2/v1/priest2_v1_4.png" id="5_smehm"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_u8vuu"]
 animations = [{
@@ -27,19 +27,19 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qlg0r"]
-size = Vector2(10, 3.5)
+size = Vector2(11, 3.5)
 
-[node name="Player" type="CharacterBody2D" unique_id=1233679312]
+[node name="Player" type="CharacterBody2D" unique_id=1233679312 groups=["player"]]
 script = ExtResource("1_3vyb7")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1533852834]
-position = Vector2(-8, -14)
+position = Vector2(-9, -15)
 sprite_frames = SubResource("SpriteFrames_u8vuu")
 animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.46823108
+frame_progress = 0.49599853
 centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1637455380]
-position = Vector2(0, -1.75)
+position = Vector2(-0.5, -1)
 shape = SubResource("RectangleShape2D_qlg0r")
