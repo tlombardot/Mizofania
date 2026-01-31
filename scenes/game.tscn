@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://clxl4ye31a6d0" path="res://assets/character and tileset/Dungeon_Tileset.png" id="2_yqjtg"]
 [ext_resource type="Texture2D" uid="uid://drriet3bkrrhi" path="res://assets/Catacomb/decorative.png" id="3_p57ef"]
 [ext_resource type="Texture2D" uid="uid://bia2sqkktrn3m" path="res://assets/Catacomb/mainlevbuild.png" id="4_u5sy4"]
+[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="6_p57ef"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lnu2h"]
 texture = ExtResource("2_yqjtg")
@@ -4879,3 +4880,15 @@ tile_set = SubResource("TileSet_p57ef")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=192047674]
 environment = SubResource("Environment_iywne")
+
+[node name="Orc" parent="." unique_id=608689109 instance=ExtResource("6_p57ef")]
+position = Vector2(-64, 18)
+
+[node name="Orc2" parent="." unique_id=1144255722 instance=ExtResource("6_p57ef")]
+position = Vector2(-68, -37)
+
+[node name="Orc3" parent="." unique_id=484425815 instance=ExtResource("6_p57ef")]
+position = Vector2(56, 69)
+
+[node name="Orc4" parent="." unique_id=1994748015 instance=ExtResource("6_p57ef")]
+position = Vector2(42, -31)

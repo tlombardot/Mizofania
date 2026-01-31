@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://cr6xfljtov2a7"]
+[gd_scene format=3 uid="uid://d4anc04dih35d"]
 
-[ext_resource type="Script" uid="uid://gqmpvvm5wfom" path="res://scripts/orc.gd" id="1_bfp0d"]
+[ext_resource type="Script" path="res://scripts/orc.gd" id="1_bfp0d"]
 [ext_resource type="Texture2D" uid="uid://cdbje68ui64sl" path="res://assets/Characters(100x100)/Orc/Orc/Orc-Idle.png" id="2_hu8b3"]
 [ext_resource type="Texture2D" uid="uid://dbfm6jv37elku" path="res://assets/Characters(100x100)/Orc/Orc/Orc-Walk.png" id="3_s5mlm"]
 
@@ -119,6 +119,8 @@ animations = [{
 size = Vector2(13, 3)
 
 [node name="Orc" type="CharacterBody2D" unique_id=608689109 groups=["ennemi"]]
+z_index = 1
+y_sort_enabled = true
 script = ExtResource("1_bfp0d")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1169825597]
