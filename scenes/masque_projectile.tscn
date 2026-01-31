@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c3c8hh7tqqe8m"]
+
+[ext_resource type="Script" uid="uid://lpi48en1seyc" path="res://scripts/masque_projectile.gd" id="1_qy7tx"]
+[ext_resource type="Texture2D" uid="uid://baq7ymympckwd" path="res://assets/items and trap_animation/arrow/Just_arrow.png" id="1_yuhla"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qy7tx"]
+radius = 5.0
+
+[node name="MasqueProjectile" type="Area2D" unique_id=1901422835]
+script = ExtResource("1_qy7tx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=467324583]
+position = Vector2(-2.3282354e-10, -1)
+rotation = -1.5672213
+scale = Vector2(0.9375, 1)
+texture = ExtResource("1_yuhla")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=81875574]
+shape = SubResource("CircleShape2D_qy7tx")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

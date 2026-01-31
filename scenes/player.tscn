@@ -47,3 +47,7 @@ shape = SubResource("RectangleShape2D_qlg0r")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2112284556]
 position = Vector2(-0.5, -1)
 zoom = Vector2(4, 4)
+
+[node name="TimerPossession" type="Timer" parent="." unique_id=1225600355]
+wait_time = 5.0
+one_shot = true
