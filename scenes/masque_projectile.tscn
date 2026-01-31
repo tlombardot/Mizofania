@@ -1,21 +1,31 @@
-[gd_scene format=3 uid="uid://c3c8hh7tqqe8m"]
+[gd_scene format=3 uid="uid://b01e5l2t0vhpn"]
 
-[ext_resource type="Script" uid="uid://lpi48en1seyc" path="res://scripts/masque_projectile.gd" id="1_qy7tx"]
-[ext_resource type="Texture2D" uid="uid://baq7ymympckwd" path="res://assets/items and trap_animation/arrow/Just_arrow.png" id="1_yuhla"]
+[ext_resource type="Script" uid="uid://bnd1oi0spf1p7" path="res://scenes/masque_projectile.gd" id="1_3553t"]
+[ext_resource type="Texture2D" uid="uid://8mb6fcqfu2dy" path="res://assets/Characters/Skull/v2/skull_v2_1.png" id="2_dbjjy"]
+[ext_resource type="Texture2D" uid="uid://b6p0cl515ahpy" path="res://assets/Characters/Skull/v2/skull_v2_2.png" id="3_opfmh"]
+[ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Characters/Skull/v2/skull_v2_3.png" id="4_u2o0l"]
+[ext_resource type="Texture2D" uid="uid://djm0b2rag4opu" path="res://assets/Characters/Skull/v2/skull_v2_4.png" id="5_rmeke"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_qy7tx"]
-radius = 5.0
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_op2kd"]
+frames = 4
+frame_0/texture = ExtResource("2_dbjjy")
+frame_0/duration = 0.1
+frame_1/texture = ExtResource("3_opfmh")
+frame_1/duration = 0.1
+frame_2/texture = ExtResource("4_u2o0l")
+frame_2/duration = 0.1
+frame_3/texture = ExtResource("5_rmeke")
+frame_3/duration = 0.1
 
-[node name="MasqueProjectile" type="Area2D" unique_id=1901422835]
-script = ExtResource("1_qy7tx")
+[sub_resource type="CircleShape2D" id="CircleShape2D_lhjkw"]
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=467324583]
-position = Vector2(-2.3282354e-10, -1)
-rotation = -1.5672213
-scale = Vector2(0.9375, 1)
-texture = ExtResource("1_yuhla")
+[node name="MasqueProjectile" type="Area2D" unique_id=131586982]
+script = ExtResource("1_3553t")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=81875574]
-shape = SubResource("CircleShape2D_qy7tx")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1061425787]
+texture = SubResource("AnimatedTexture_op2kd")
 
-[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=232419429]
+shape = SubResource("CircleShape2D_lhjkw")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1384022628]

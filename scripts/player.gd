@@ -1,148 +1,205 @@
 extends CharacterBody2D
 
+enum State { MASQUE, POSSEDE }
+var current_state = State.MASQUE
+
 @export var speed = 150
+@export var rayon_possession_proche = 3 * 16 
+@export var temps_survie_masque = 10.0 
+@export var duree_possession_max = 30.0 
+@export var max_health = 100.0
+
+var health = 100.0
+var espece_actuelle = "masque"
+var premiere_apparition = true
+var masque_actif = null
+
 @onready var sprite = $AnimatedSprite2D
-@onready var timer_possession = $TimerPossession
+@onready var jauge_vitalite = $Vitalite/JaugeVitalite
+@onready var jauge_sante = $Sante/JaugeSante
+@onready var timer_vitalite = $TimerPossession
+@onready var timer_mort = $DeathTimer
+@onready var collision_shape = $CollisionShape2D
+@onready var camera = $Camera2D
 
-# --- SAUT & MOUVEMENT ---
-var jump_height = 5.0
-var jump_speed = 10.0
-var time = 0.0
-var initial_y = 0.0 
-
-# --- VARIABLES DE TRANSFORMATION ---
 var masque_scene = preload("res://scenes/masque_projectile.tscn")
-var futur_corps = null 
 
-# --- MÉMOIRE (Pour redevenir normal) ---
-var original_frames = null       
+var original_frames = null
+var original_scale = Vector2.ONE
+var original_offset = Vector2.ZERO
+var original_centered = false
+var original_sprite_pos = Vector2.ZERO
 var original_shape = null        
-var original_scale = Vector2.ONE 
 var original_col_pos = Vector2.ZERO
+var original_col_scale = Vector2.ONE
 
 func _ready():
-	# 1. On sauvegarde tout du joueur normal
-	initial_y = sprite.position.y
+	health = max_health
+	jauge_sante.max_value = max_health
+	jauge_sante.value = health
+
 	original_frames = sprite.sprite_frames
 	original_scale = sprite.scale
+	original_offset = sprite.offset
+	original_centered = sprite.centered
+	original_sprite_pos = sprite.position
 	
-	# Sauvegarde précise de la collision
-	if $CollisionShape2D.shape:
-		original_shape = $CollisionShape2D.shape.duplicate()
-		original_col_pos = $CollisionShape2D.position
-
-	timer_possession.timeout.connect(_on_timer_timeout)
+	if collision_shape.shape:
+		original_shape = collision_shape.shape.duplicate()
+		original_col_pos = collision_shape.position
+		original_col_scale = collision_shape.scale
+	
+	timer_vitalite.one_shot = true
+	timer_mort.one_shot = true
+	
+	if not timer_vitalite.timeout.is_connected(mourir):
+		timer_vitalite.timeout.connect(mourir)
+	if not timer_mort.timeout.is_connected(mourir):
+		timer_mort.timeout.connect(mourir)
+	
+	devenir_masque(true)
 
 func _physics_process(delta):
+	jauge_sante.value = health
 	
-	#Transformation
-	if futur_corps != null:
-		appliquer_transformation()
-		return 
-
-	#Mouvement keybind récupèré dans les settings du projet
-	var direction = Input.get_vector("gauche", "droite", "haut", "bas")
-	
-	if direction:
-		velocity = direction * speed
-		if direction.x > 0: sprite.flip_h = false
-		elif direction.x < 0: sprite.flip_h = true
-		
-		# Animation saut
-		time += delta * jump_speed
-		sprite.position.y = initial_y - abs(sin(time) * jump_height)
+	if current_state == State.POSSEDE:
+		jauge_vitalite.visible = true
+		jauge_vitalite.max_value = timer_vitalite.wait_time
+		jauge_vitalite.value = timer_vitalite.time_left
 	else:
-		velocity = Vector2.ZERO
-		sprite.position.y = move_toward(sprite.position.y, initial_y, delta * jump_speed)
-		time = 0.0
+		jauge_vitalite.visible = false
 
-	move_and_slide()
+	if current_state == State.MASQUE and is_instance_valid(masque_actif):
+		camera.global_position = masque_actif.global_position
+
+	match current_state:
+		State.MASQUE:
+			velocity = Vector2.ZERO
+			move_and_slide()
+			if Input.is_action_just_pressed("ui_accept"):
+				tenter_possession_proximite()
+
+		State.POSSEDE:
+			var direction = Input.get_vector("gauche", "droite", "haut", "bas")
+			if direction:
+				velocity = direction * speed
+				sprite.flip_h = direction.x < 0
+				sprite.play("walk")
+			else:
+				velocity = Vector2.ZERO
+				sprite.play("idle")
+			move_and_slide()
+			
+			if Input.is_action_just_pressed("ui_accept") and timer_vitalite.time_left < (duree_possession_max - 0.5):
+				ejecter_masque()
+
+func take_damage(amount):
+	health -= amount
+	sprite.modulate = Color.RED
+	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color.WHITE
+	if health <= 0:
+		mourir()
+
+func tenter_possession_proximite():
+	var ennemis = get_tree().get_nodes_in_group("ennemi")
+	var plus_proche = null
+	var distance_min = rayon_possession_proche
+	for ennemi in ennemis:
+		var dist = global_position.distance_to(ennemi.global_position)
+		if dist < distance_min:
+			distance_min = dist
+			plus_proche = ennemi
+	if plus_proche:
+		reussir_possession(plus_proche)
+
+func reussir_possession(nouvel_hote):
+	visible = true
+	collision_shape.set_deferred("disabled", false)
+	timer_mort.stop()
+	current_state = State.POSSEDE
+	premiere_apparition = false
+	global_position = nouvel_hote.global_position
 	
-	if Input.is_action_just_pressed("ui_accept") and timer_possession.is_stopped():
-		tirer_masque()
+	var ennemi_sprite = nouvel_hote.get_node("AnimatedSprite2D")
+	sprite.sprite_frames = ennemi_sprite.sprite_frames
+	sprite.position = ennemi_sprite.position
+	sprite.scale = ennemi_sprite.scale
+	sprite.centered = ennemi_sprite.centered
+	sprite.offset = ennemi_sprite.offset
+	
+	var ennemi_shape_node = nouvel_hote.get_node("CollisionShape2D")
+	if ennemi_shape_node:
+		collision_shape.shape = ennemi_shape_node.shape.duplicate()
+		collision_shape.position = ennemi_shape_node.position
+		collision_shape.scale = ennemi_shape_node.scale
 
-# --- FONCTIONS ---
+	if "espece" in nouvel_hote:
+		espece_actuelle = nouvel_hote.espece
+	
+	masque_actif = null
+	camera.top_level = false
+	camera.position = Vector2.ZERO
+	
+	nouvel_hote.queue_free()
+	timer_vitalite.start(duree_possession_max)
 
-func tirer_masque():
+func ejecter_masque():
 	var masque = masque_scene.instantiate()
-	masque.global_position = global_position
+	masque.global_position = global_position + sprite.position + Vector2(0, -10)
 	masque.look_at(get_global_mouse_position())
 	masque.player_ref = self 
 	get_parent().add_child(masque)
+	
+	masque_actif = masque
+	camera.top_level = true
+	visible = false
+	collision_shape.set_deferred("disabled", true)
+	timer_vitalite.stop()
+	current_state = State.MASQUE
 
-func prendre_corps(ennemi_cible):
-	futur_corps = ennemi_cible
+func rater_possession(position_crash):
+	masque_actif = null
+	camera.top_level = false
+	camera.position = Vector2.ZERO
+	global_position = position_crash
+	devenir_masque(false)
 
-func appliquer_transformation():
-	print("Transformation en cours (5 secondes)")
-	
-	#Téléportation du corps
-	global_position = futur_corps.global_position
-	
-	#Copie du sprite de l'ennemi
-	var ennemi_sprite = futur_corps.get_node("AnimatedSprite2D")
-	
-	# On copie les animations
-	sprite.sprite_frames = ennemi_sprite.sprite_frames
-	# On copie la position locale
-	sprite.position = ennemi_sprite.position
-	sprite.scale = ennemi_sprite.scale
-	
-	# On copie le point d'ancrage
-	sprite.centered = ennemi_sprite.centered 
-	sprite.offset = ennemi_sprite.offset
-	
-	# On copie la direction du regard
-	sprite.flip_h = ennemi_sprite.flip_h
-
-	# On cale le saut sur cette nouvelle position
-	initial_y = sprite.position.y
-	time = 0.0
-
-	#COPIE DE LA COLLISION
-	var ennemi_shape_node = futur_corps.get_node("CollisionShape2D")
-	if ennemi_shape_node:
-		$CollisionShape2D.shape = ennemi_shape_node.shape.duplicate()
-		$CollisionShape2D.position = ennemi_shape_node.position
-		$CollisionShape2D.scale = ennemi_shape_node.scale
-	
-	#Nettoyage
-	futur_corps.queue_free()
-	futur_corps = null
-	
-	#Fix de la caméra
-	var cam = $Camera2D
-	if cam:
-		var old_smoothing = cam.position_smoothing_enabled
-		cam.position_smoothing_enabled = false
-		
-		# On force la caméra à se mettre sur le joueur
-		cam.force_update_scroll()
-		
-		# On attend une frame pour être sûr que l'écran a bougé
-		await get_tree().process_frame
-		
-		# On remet le réglage d'avant
-		cam.position_smoothing_enabled = old_smoothing
-	
-	timer_possession.start()
-
-# --- RETOUR À LA NORMALE ---
-func _on_timer_timeout():
-	print("Revient à la normale")
-	# On remet l'apparence
+func devenir_masque(is_safe_start):
+	current_state = State.MASQUE
+	espece_actuelle = "masque"
+	visible = true
+	collision_shape.set_deferred("disabled", false)
 	sprite.sprite_frames = original_frames
 	sprite.scale = original_scale
-	sprite.offset = Vector2.ZERO
+	sprite.position = original_sprite_pos
+	sprite.play("default")
 	
-	#On remet la collision
 	if original_shape:
-		$CollisionShape2D.shape = original_shape
-		$CollisionShape2D.position = original_col_pos 
-		$CollisionShape2D.scale = Vector2.ONE
+		collision_shape.shape = original_shape
+		collision_shape.position = original_col_pos
 	
-	#On remet le saut standard
-	initial_y = 0.0
-	sprite.position.y = initial_y
+	timer_vitalite.stop()
+	if is_safe_start:
+		timer_mort.stop()
+	else:
+		timer_mort.start(temps_survie_masque)
+
+func mourir():
+	print("💀 MORT !")
 	
-	velocity.y = -200
+	# On récupère l'arbre de scène avant de faire quoi que ce soit
+	var tree = get_tree()
+	
+	if tree:
+		# On fige le processus pour éviter les erreurs multiples
+		set_physics_process(false)
+		
+		# Petit délai pour laisser le temps de voir la mort
+		# On utilise l'arbre de scène pour créer le timer
+		await tree.create_timer(1.0).timeout
+		
+		# On recharge proprement
+		tree.reload_current_scene()
+	else:
+		push_error("Erreur : Impossible d'accéder au SceneTree pour recharger.")

@@ -1,8 +1,9 @@
 [gd_scene format=4 uid="uid://ce3e6qkiswtr5"]
 
 [ext_resource type="PackedScene" uid="uid://cegyb6qot5ih4" path="res://scenes/player.tscn" id="1_uwrxv"]
-[ext_resource type="Texture2D" uid="uid://diq7ucmrk5tlj" path="res://assets/character and tileset/demonstration.png" id="2_iywne"]
-[ext_resource type="Texture2D" uid="uid://clxl4ye31a6d0" path="res://assets/character and tileset/Dungeon_Tileset.png" id="2_yqjtg"]
+[ext_resource type="Texture2D" uid="uid://diq7ucmrk5tlj" path="res://assets/Tileset Dungeon/demonstration.png" id="2_iywne"]
+[ext_resource type="PackedScene" uid="uid://b01e5l2t0vhpn" path="res://scenes/masque_projectile.tscn" id="2_u5sy4"]
+[ext_resource type="Texture2D" uid="uid://clxl4ye31a6d0" path="res://assets/Tileset Dungeon/Dungeon_Tileset.png" id="2_yqjtg"]
 [ext_resource type="Texture2D" uid="uid://drriet3bkrrhi" path="res://assets/Catacomb/decorative.png" id="3_p57ef"]
 [ext_resource type="Texture2D" uid="uid://bia2sqkktrn3m" path="res://assets/Catacomb/mainlevbuild.png" id="4_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://cr6xfljtov2a7" path="res://scenes/orc.tscn" id="6_p57ef"]
@@ -4689,11 +4690,11 @@ texture = ExtResource("3_p57ef")
 9:8/0/y_sort_origin = -7
 9:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -0.9998112, 8, -0.96592, 8, 8, -8, 8)
 10:8/0 = 0
-10:8/0/y_sort_origin = -3
+10:8/0/y_sort_origin = -5
 10:8/0/probability = 0.5
 10:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-6.037492, 1.0312631, 6.0362825, 1.001003, 6.03426, 8, -5.9467115, 8)
 11:8/0 = 0
-11:8/0/y_sort_origin = -3
+11:8/0/y_sort_origin = -5
 11:8/0/probability = 0.5
 11:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-5.0425406, 1.9850651, 3.974965, 1.8942848, 3.9531784, 8, -4.9215, 8, -4.9517603, 8)
 12:8/0 = 0
@@ -4743,7 +4744,7 @@ texture = ExtResource("3_p57ef")
 2:10/0 = 0
 2:10/0/y_sort_origin = 7
 9:10/0 = 0
-9:10/0/y_sort_origin = 9
+9:10/0/y_sort_origin = 10
 0:11/0 = 0
 0:11/0/y_sort_origin = -7
 0:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-2.9939985, -8, 8, -8, 8, 8, -2.9776602, 8)
@@ -4754,24 +4755,24 @@ texture = ExtResource("3_p57ef")
 2:11/0/y_sort_origin = -7
 2:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(2.0154982, -8, -8, -8, -8, 8, 2.020525, 8)
 9:11/0 = 0
-9:11/0/y_sort_origin = -7
+9:11/0/y_sort_origin = -4
 9:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -0.9998112, 8, -0.96592, 8, 8, -8, 8)
 10:11/0 = 0
-10:11/0/y_sort_origin = -7
+10:11/0/y_sort_origin = -5
 10:11/0/probability = 0.5
 10:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-6.037492, 1.0312631, 6.0362825, 1.001003, 6.03426, 8, -5.9467115, 8)
 11:11/0 = 0
 11:11/0/texture_origin = Vector2i(0, 5)
-11:11/0/y_sort_origin = -12
+11:11/0/y_sort_origin = -10
 11:11/0/probability = 0.5
 11:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4.9767165, -4.0354013, 4.0024576, -4.017516, 3.9770432, 2.9613705, -4.9767165, 2.9707832)
 12:11/0 = 0
 12:11/0/texture_origin = Vector2i(0, 5)
-12:11/0/y_sort_origin = -12
+12:11/0/y_sort_origin = -10
 12:11/0/probability = 0.5
 12:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4.014262, -2.9857395, 3.9492874, -2.9857395, 3.9350243, 2.9477, -3.988906, 2.9477)
 13:11/0 = 0
-13:11/0/y_sort_origin = -7
+13:11/0/y_sort_origin = -5
 13:11/0/probability = 0.5
 13:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-3.997962, 2.471643, 4.0137153, 2.4449975, 3.9834552, 8, -3.973755, 8)
 0:12/0 = 0
@@ -5055,7 +5056,16 @@ y_sort_enabled = true
 [node name="CharacterBody2D" parent="." unique_id=1233679312 instance=ExtResource("1_uwrxv")]
 z_index = 1
 y_sort_enabled = true
+collision_layer = 2
+collision_mask = 5
 speed = 100
+rayon_possession_proche = 40
+temps_survie_masque = 5.0
+duree_possession_max = 15.0
+
+[node name="MasqueProjectile" parent="." unique_id=1901422835 instance=ExtResource("2_u5sy4")]
+collision_layer = 0
+collision_mask = 5
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1374880624]
 z_index = -1
@@ -5097,3 +5107,5 @@ position = Vector2(56, 69)
 
 [node name="Orc4" parent="." unique_id=1994748015 instance=ExtResource("6_p57ef")]
 position = Vector2(42, -31)
+
+[connection signal="body_entered" from="MasqueProjectile" to="MasqueProjectile" method="_on_body_entered"]
