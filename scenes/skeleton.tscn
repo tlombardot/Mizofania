@@ -135,7 +135,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3nhjk")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack1",
 "speed": 5.0
 }, {
@@ -161,7 +161,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_67pwj")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack2",
 "speed": 5.0
 }, {
@@ -227,7 +227,7 @@ script = ExtResource("1_5pgwy")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=822985345]
 position = Vector2(-1, -7)
 sprite_frames = SubResource("SpriteFrames_tilo8")
-animation = &"idle"
+animation = &"attack2"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2095617030]
