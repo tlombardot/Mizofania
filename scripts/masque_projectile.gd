@@ -1,24 +1,32 @@
 extends Area2D
 
-var vitesse = 500  # Vitesse du projectile
-var player_ref = null # Pour savoir qui a tiré (le joueur)
+var vitesse = 450
+var distance_max = 300.0 
+var distance_parcourue = 0.0
+var player_ref = null
+var corps_a_ignorer = null # Le mob qu'on vient de spawn
 
 func _physics_process(delta):
-	# Fait avancer le masque tout droit dans la direction où il regarde
-	position += transform.x * vitesse * delta
+	var deplacement = vitesse * delta
+	position += transform.x * deplacement
+	distance_parcourue += deplacement
+	
+	if distance_parcourue >= distance_max:
+		rater_cible()
 
 func _on_body_entered(body):
+	if body == player_ref: return
+	if body == corps_a_ignorer: return # <--- FIX BUG RE-POSSESSION
+
 	if body.is_in_group("ennemi"):
-		print("J'ai touché l'ennemi : ", body.name)
-		if player_ref:
-			player_ref.prendre_corps(body)
-		queue_free()
+		if "current_state" in body and body.current_state == 4: return
 		
-	# SI C'EST LE JOUEUR (On ignore, pour pas se tirer dessus soi-même)
-	elif body == player_ref:
-		pass # On ne fait rien
-		
-	# SI C'EST N'IMPORTE QUOI D'AUTRE (Donc un mur, un sol, une table...)
-	else:
-		# On détruit le masque car il a tapé un obstacle
+		if player_ref: player_ref.call_deferred("reussir_possession", body)
 		queue_free()
+	
+	elif body is TileMap or body is StaticBody2D or body is TileMapLayer:
+		rater_cible()
+
+func rater_cible():
+	if player_ref: player_ref.call_deferred("rater_possession", global_position)
+	queue_free()

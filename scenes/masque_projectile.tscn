@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://b01e5l2t0vhpn"]
+[gd_scene format=3 uid="uid://c3c8hh7tqqe8m"]
 
-[ext_resource type="Script" uid="uid://bnd1oi0spf1p7" path="res://scenes/masque_projectile.gd" id="1_3553t"]
+[ext_resource type="Script" uid="uid://bnd1oi0spf1p7" path="res://scripts/masque_projectile.gd" id="1_op2kd"]
 [ext_resource type="Texture2D" uid="uid://8mb6fcqfu2dy" path="res://assets/Characters/Skull/v2/skull_v2_1.png" id="2_dbjjy"]
 [ext_resource type="Texture2D" uid="uid://b6p0cl515ahpy" path="res://assets/Characters/Skull/v2/skull_v2_2.png" id="3_opfmh"]
 [ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Characters/Skull/v2/skull_v2_3.png" id="4_u2o0l"]
@@ -18,9 +18,12 @@ frame_3/texture = ExtResource("5_rmeke")
 frame_3/duration = 0.1
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lhjkw"]
+radius = 5.0
 
 [node name="MasqueProjectile" type="Area2D" unique_id=131586982]
-script = ExtResource("1_3553t")
+collision_layer = 0
+collision_mask = 5
+script = ExtResource("1_op2kd")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1061425787]
 texture = SubResource("AnimatedTexture_op2kd")
@@ -29,3 +32,5 @@ texture = SubResource("AnimatedTexture_op2kd")
 shape = SubResource("CircleShape2D_lhjkw")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1384022628]
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

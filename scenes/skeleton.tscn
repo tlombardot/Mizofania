@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dj43vmw1ne3jj" path="res://assets/Characters/Skeleton/Skeleton/Skeleton-Idle.png" id="1_pbvs3"]
 [ext_resource type="Texture2D" uid="uid://cvarpv3f4a72t" path="res://assets/Characters/Skeleton/Skeleton/Skeleton-Attack02.png" id="2_5pgwy"]
 [ext_resource type="Texture2D" uid="uid://dcv23e5rjgo86" path="res://assets/Characters/Skeleton/Skeleton/Skeleton-Walk.png" id="4_ssl1b"]
+[ext_resource type="Texture2D" uid="uid://b0gpm81g45byn" path="res://assets/Characters/Skeleton/Skeleton/Skeleton-Death.png" id="4_w4hcs"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_haw2w"]
 atlas = ExtResource("1_bnirc")
@@ -57,6 +58,22 @@ region = Rect2(500, 0, 100, 100)
 [sub_resource type="AtlasTexture" id="AtlasTexture_67pwj"]
 atlas = ExtResource("2_5pgwy")
 region = Rect2(600, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bogq3"]
+atlas = ExtResource("4_w4hcs")
+region = Rect2(0, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w1nps"]
+atlas = ExtResource("4_w4hcs")
+region = Rect2(100, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_05nho"]
+atlas = ExtResource("4_w4hcs")
+region = Rect2(200, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xbje2"]
+atlas = ExtResource("4_w4hcs")
+region = Rect2(300, 0, 100, 100)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_txkty"]
 atlas = ExtResource("1_pbvs3")
@@ -137,7 +154,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack1",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -163,7 +180,24 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack2",
-"speed": 5.0
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bogq3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w1nps")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_05nho")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xbje2")
+}],
+"loop": false,
+"name": &"death",
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -186,7 +220,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -215,19 +249,30 @@ animations = [{
 }],
 "loop": true,
 "name": &"walk",
-"speed": 5.0
+"speed": 10.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bnirc"]
 radius = 8.062258
 
 [node name="Skeleton" type="CharacterBody2D" unique_id=1450286213 groups=["ennemi"]]
+z_index = 1
+y_sort_enabled = true
+collision_layer = 4
+collision_mask = 3
 script = ExtResource("1_5pgwy")
+espece = "squelette"
+max_health = 40.0
+damage = 10.0
+attack_cooldown = 0.6
+attack_range = 30.0
+max_vitality_duration = 15.0
+ejection_range = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=822985345]
 position = Vector2(-1, -7)
 sprite_frames = SubResource("SpriteFrames_tilo8")
-animation = &"attack2"
+animation = &"idle"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2095617030]
@@ -249,3 +294,13 @@ collide_with_bodies = false
 [node name="Timer" type="Timer" parent="." unique_id=575504019]
 wait_time = 5.0
 one_shot = true
+
+[node name="IndicateurNiveau" type="ColorRect" parent="." unique_id=2089157250]
+visible = false
+z_index = 2
+offset_left = 1.0
+offset_top = -19.0
+offset_right = 3.0
+offset_bottom = -17.0
+rotation = 0.7853982
+color = Color(1, 0, 0, 1)

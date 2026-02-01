@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c1sewqg27h1fv"
+path="res://.godot/imported/End of Possession v2.wav-36a2f0dfbc61bf0b57f8a2ab54a950db.sample"
+
+[deps]
+
+source_file="res://assets/sound/End of Possession v2.wav"
+dest_files=["res://.godot/imported/End of Possession v2.wav-36a2f0dfbc61bf0b57f8a2ab54a950db.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

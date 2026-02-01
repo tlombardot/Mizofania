@@ -1,12 +1,19 @@
-[gd_scene format=3 uid="uid://cegyb6qot5ih4"]
+[gd_scene format=3 uid="uid://khb4f1hf1v5h"]
 
 [ext_resource type="Script" uid="uid://e2flklwmqekx" path="res://scripts/player.gd" id="1_3vyb7"]
 [ext_resource type="Texture2D" uid="uid://8mb6fcqfu2dy" path="res://assets/Characters/Skull/v2/skull_v2_1.png" id="2_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://b6p0cl515ahpy" path="res://assets/Characters/Skull/v2/skull_v2_2.png" id="3_tuyoq"]
 [ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Characters/Skull/v2/skull_v2_3.png" id="4_fjrip"]
 [ext_resource type="Texture2D" uid="uid://djm0b2rag4opu" path="res://assets/Characters/Skull/v2/skull_v2_4.png" id="5_smehm"]
+[ext_resource type="Texture2D" uid="uid://bt1jmd0feqeu1" path="res://assets/progress_bar/pb_empty.png" id="6_fjrip"]
+[ext_resource type="Texture2D" uid="uid://cbjyfn8ij8bka" path="res://assets/UIBundle/FreeHorrorUi.png" id="7_ui_atlas"]
+[ext_resource type="Texture2D" uid="uid://btls0td1brjv2" path="res://assets/progress_bar/pb_progress_vitalite.png" id="8_ur7pv"]
+[ext_resource type="Texture2D" uid="uid://bb8mds2hd72l1" path="res://assets/progress_bar/pb_progress_sante.png" id="9_y4r1p"]
+[ext_resource type="Texture2D" path="res://assets/progress_bar/jaugecooldown_empty.png" id="10_d2wvv"]
+[ext_resource type="Texture2D" uid="uid://cbsvirqoxmfck" path="res://assets/progress_bar/jaugecooldown_progress.png" id="11_3v2ag"]
+[ext_resource type="Texture2D" uid="uid://ckk4r7rkesl4m" path="res://assets/progress_bar/pb_progress_xp.png" id="12_3v2ag"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_u8vuu"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_ur7pv"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -26,46 +33,116 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_qlg0r"]
-radius = 7.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_y4r1p"]
+radius = 5.0
 
-[node name="Player" type="CharacterBody2D" unique_id=1233679312 groups=["player"]]
-script = ExtResource("1_3vyb7")
+[sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
+atlas = ExtResource("7_ui_atlas")
+region = Rect2(165.99738, 69.947685, 20.013412, 21.044838)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1533852834]
+[sub_resource type="AtlasTexture" id="AtlasTexture_3v2ag"]
+atlas = ExtResource("7_ui_atlas")
+region = Rect2(134.99286, 104.894424, 17.99173, 15.134705)
+
+[node name="Player" type="CharacterBody2D" unique_id=530525702 groups=["player"]]
+z_index = 1
 y_sort_enabled = true
-sprite_frames = SubResource("SpriteFrames_u8vuu")
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_3vyb7")
+temps_survie_masque = 10.0
+xp_cost_possession = 10
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=775170457]
+sprite_frames = SubResource("SpriteFrames_ur7pv")
 animation = &"idle"
-autoplay = "idle"
-frame_progress = 0.046520494
+frame_progress = 0.1807003
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=2112284556]
-position = Vector2(-0.5, -1)
-zoom = Vector2(4, 4)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1461492528]
+shape = SubResource("CircleShape2D_y4r1p")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1287810569]
-shape = SubResource("CircleShape2D_qlg0r")
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1562495814]
+zoom = Vector2(6, 6)
 
-[node name="TimerPossession" type="Timer" parent="." unique_id=1225600355]
+[node name="TimerPossession" type="Timer" parent="." unique_id=1154640623]
 wait_time = 15.0
 one_shot = true
 
-[node name="DeathTimer" type="Timer" parent="." unique_id=1941971108]
+[node name="DeathTimer" type="Timer" parent="." unique_id=1204086637]
+wait_time = 10.0
+one_shot = true
+
+[node name="TimerCooldown" type="Timer" parent="." unique_id=1906906115]
 wait_time = 5.0
 one_shot = true
 
-[node name="Vitalite" type="CanvasLayer" parent="." unique_id=469639755]
-offset = Vector2(30, 30)
-transform = Transform2D(1, 0, 0, 1, 30, 30)
+[node name="Vitalite" type="CanvasLayer" parent="." unique_id=2107433723]
+offset = Vector2(300, 20)
+scale = Vector2(3, 3)
+transform = Transform2D(3, 0, 0, 3, 300, 20)
 
-[node name="JaugeVitalite" type="ProgressBar" parent="Vitalite" unique_id=2088978288]
-offset_right = 4.0
-offset_bottom = 27.0
+[node name="GroupeVitalite" type="HBoxContainer" parent="Vitalite" unique_id=883416955]
+offset_right = 85.0
+offset_bottom = 21.0
+size_flags_vertical = 0
 
-[node name="Sante" type="CanvasLayer" parent="." unique_id=439176482]
-offset = Vector2(30, 0)
-transform = Transform2D(1, 0, 0, 1, 30, 0)
+[node name="Nounours" type="TextureRect" parent="Vitalite/GroupeVitalite" unique_id=258642676]
+layout_mode = 2
+size_flags_vertical = 0
+texture = SubResource("AtlasTexture_d2wvv")
+stretch_mode = 2
 
-[node name="JaugeSante" type="ProgressBar" parent="Sante" unique_id=336406707]
-offset_right = 4.0
-offset_bottom = 27.0
+[node name="JaugeVitalite" type="TextureProgressBar" parent="Vitalite/GroupeVitalite" unique_id=1312430757]
+layout_mode = 2
+size_flags_vertical = 0
+texture_under = ExtResource("6_fjrip")
+texture_progress = ExtResource("8_ur7pv")
+
+[node name="Sante" type="CanvasLayer" parent="." unique_id=318329176]
+offset = Vector2(20, 20)
+scale = Vector2(3, 3)
+transform = Transform2D(3, 0, 0, 3, 20, 20)
+
+[node name="GroupeSante" type="HBoxContainer" parent="Sante" unique_id=1037603876]
+offset_right = 82.0
+offset_bottom = 15.0
+size_flags_vertical = 0
+
+[node name="Coeur" type="TextureRect" parent="Sante/GroupeSante" unique_id=1539617727]
+layout_mode = 2
+size_flags_vertical = 0
+texture = SubResource("AtlasTexture_3v2ag")
+stretch_mode = 2
+
+[node name="JaugeSante" type="TextureProgressBar" parent="Sante/GroupeSante" unique_id=642956566]
+layout_mode = 2
+size_flags_vertical = 0
+texture_under = ExtResource("6_fjrip")
+texture_progress = ExtResource("9_y4r1p")
+
+[node name="CooldownUI" type="CanvasLayer" parent="." unique_id=871506566]
+offset = Vector2(600, 20)
+transform = Transform2D(1, 0, 0, 1, 600, 20)
+
+[node name="JaugeCooldown" type="TextureProgressBar" parent="CooldownUI" unique_id=1991994945]
+offset_right = 29.0
+offset_bottom = 29.0
+scale = Vector2(3, 3)
+size_flags_vertical = 0
+fill_mode = 4
+texture_under = ExtResource("10_d2wvv")
+texture_progress = ExtResource("11_3v2ag")
+
+[node name="XP" type="CanvasLayer" parent="." unique_id=1175652625]
+offset = Vector2(20, 600)
+scale = Vector2(3, 3)
+transform = Transform2D(3, 0, 0, 3, 20, 600)
+
+[node name="JaugeXP" type="TextureProgressBar" parent="XP" unique_id=862331281]
+offset_right = 40.0
+offset_bottom = 40.0
+texture_under = ExtResource("6_fjrip")
+texture_progress = ExtResource("12_3v2ag")
+
+[connection signal="timeout" from="TimerPossession" to="." method="_on_vitalite_empty"]
+[connection signal="timeout" from="DeathTimer" to="." method="mourir"]

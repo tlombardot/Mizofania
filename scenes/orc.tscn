@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://vwuyc78v2dap" path="res://assets/Characters/Orc/Orc/Orc-Attack01.png" id="2_nvs4g"]
 [ext_resource type="Texture2D" uid="uid://pprm8to24o4m" path="res://assets/Characters/Orc/Orc/Orc-Attack02.png" id="3_xme4o"]
 [ext_resource type="Texture2D" uid="uid://cbytcs1y4c0sq" path="res://assets/Characters/Orc/Orc/Orc-Idle.png" id="4_nvs4g"]
+[ext_resource type="Texture2D" uid="uid://cwjccblu61vp2" path="res://assets/Characters/Orc/Orc/Orc-Death.png" id="4_xme4o"]
 [ext_resource type="Texture2D" uid="uid://btgwqtb8o4y6k" path="res://assets/Characters/Orc/Orc/Orc-Walk.png" id="5_duj3f"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_48uv6"]
@@ -53,6 +54,22 @@ region = Rect2(400, 0, 100, 100)
 [sub_resource type="AtlasTexture" id="AtlasTexture_4tfue"]
 atlas = ExtResource("3_xme4o")
 region = Rect2(500, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_duj3f"]
+atlas = ExtResource("4_xme4o")
+region = Rect2(0, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v64p0"]
+atlas = ExtResource("4_xme4o")
+region = Rect2(100, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8a5gh"]
+atlas = ExtResource("4_xme4o")
+region = Rect2(200, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qp0yf"]
+atlas = ExtResource("4_xme4o")
+region = Rect2(300, 0, 100, 100)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cjqs3"]
 atlas = ExtResource("4_nvs4g")
@@ -160,6 +177,23 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_duj3f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v64p0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8a5gh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qp0yf")
+}],
+"loop": false,
+"name": &"death",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_cjqs3")
 }, {
 "duration": 1.0,
@@ -179,7 +213,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -208,7 +242,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"walk",
-"speed": 5.0
+"speed": 10.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hu8b3"]
@@ -220,15 +254,23 @@ y_sort_enabled = true
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_hu8b3")
+max_health = 80.0
+speed = 30.0
+damage = 20.0
+attack_cooldown = 1.5
+attack_range = 30.0
+niveau_requis = 2
+xp_min = 20
+xp_max = 25
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1169825597]
 position = Vector2(0, -7)
 sprite_frames = SubResource("SpriteFrames_48uv6")
-animation = &"attack2"
+animation = &"walk"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1532172233]
-position = Vector2(0, -7)
+position = Vector2(1, -7)
 shape = SubResource("CircleShape2D_hu8b3")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=477617216]
@@ -246,3 +288,13 @@ collide_with_bodies = false
 [node name="Timer" type="Timer" parent="." unique_id=1033635358]
 wait_time = 5.0
 one_shot = true
+
+[node name="IndicateurNiveau" type="ColorRect" parent="." unique_id=1181093061]
+visible = false
+z_index = 2
+offset_left = 1.0
+offset_top = -19.0
+offset_right = 3.0
+offset_bottom = -17.0
+rotation = 0.7853982
+color = Color(1, 0, 0, 1)

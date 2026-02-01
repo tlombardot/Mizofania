@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b0yssurixnxwc"
+path="res://.godot/imported/Starting Possession v2.wav-86f84517eab213101ca669fde04eae0a.sample"
+
+[deps]
+
+source_file="res://assets/sound/Starting Possession v2.wav"
+dest_files=["res://.godot/imported/Starting Possession v2.wav-86f84517eab213101ca669fde04eae0a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

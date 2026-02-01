@@ -1,12 +1,12 @@
 [gd_scene format=4 uid="uid://ce3e6qkiswtr5"]
 
-[ext_resource type="PackedScene" uid="uid://cegyb6qot5ih4" path="res://scenes/player.tscn" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://khb4f1hf1v5h" path="res://scenes/player.tscn" id="1_uwrxv"]
 [ext_resource type="Texture2D" uid="uid://diq7ucmrk5tlj" path="res://assets/Tileset Dungeon/demonstration.png" id="2_iywne"]
-[ext_resource type="PackedScene" uid="uid://b01e5l2t0vhpn" path="res://scenes/masque_projectile.tscn" id="2_u5sy4"]
 [ext_resource type="Texture2D" uid="uid://clxl4ye31a6d0" path="res://assets/Tileset Dungeon/Dungeon_Tileset.png" id="2_yqjtg"]
 [ext_resource type="Texture2D" uid="uid://drriet3bkrrhi" path="res://assets/Catacomb/decorative.png" id="3_p57ef"]
 [ext_resource type="Texture2D" uid="uid://bia2sqkktrn3m" path="res://assets/Catacomb/mainlevbuild.png" id="4_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://cr6xfljtov2a7" path="res://scenes/orc.tscn" id="6_p57ef"]
+[ext_resource type="PackedScene" uid="uid://bidro8s6e60q5" path="res://scenes/skeleton.tscn" id="8_gee14"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lnu2h"]
 texture = ExtResource("2_yqjtg")
@@ -3521,6 +3521,7 @@ texture = ExtResource("4_u5sy4")
 
 [sub_resource type="TileSet" id="TileSet_lnu2h"]
 physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_p57ef")
 sources/1 = SubResource("TileSetAtlasSource_u5sy4")
 
@@ -4827,6 +4828,7 @@ texture = ExtResource("3_p57ef")
 
 [sub_resource type="TileSet" id="TileSet_wqnns"]
 physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_kxt62")
 sources/1 = SubResource("TileSetAtlasSource_r18ti")
@@ -5041,6 +5043,7 @@ texture = ExtResource("3_p57ef")
 
 [sub_resource type="TileSet" id="TileSet_p57ef"]
 physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_iywne")
 
 [sub_resource type="Environment" id="Environment_iywne"]
@@ -5049,23 +5052,12 @@ glow_enabled = true
 glow_intensity = 1.5
 glow_bloom = 0.2
 glow_hdr_threshold = 0.5
+fog_enabled = true
 
 [node name="game" type="Node2D" unique_id=256425197]
 y_sort_enabled = true
 
-[node name="CharacterBody2D" parent="." unique_id=1233679312 instance=ExtResource("1_uwrxv")]
-z_index = 1
-y_sort_enabled = true
-collision_layer = 2
-collision_mask = 5
-speed = 100
-rayon_possession_proche = 40
-temps_survie_masque = 5.0
-duree_possession_max = 15.0
-
-[node name="MasqueProjectile" parent="." unique_id=1901422835 instance=ExtResource("2_u5sy4")]
-collision_layer = 0
-collision_mask = 5
+[node name="Player" parent="." unique_id=530525702 instance=ExtResource("1_uwrxv")]
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1374880624]
 z_index = -1
@@ -5082,7 +5074,7 @@ tile_set = SubResource("TileSet_lnu2h")
 z_index = 1
 y_sort_enabled = true
 position = Vector2(-1, -2)
-tile_map_data = PackedByteArray("AAD7/wMAAQAFAAcAAAD7/wQAAQAFAAgAAAD7/wUAAQAFAAkAAAD8/wMAAQAGAAcAAAD8/wQAAQAGAAgAAAD8/wUAAQAGAAkAAAD6//r/AQAAAAgAAAD6//v/AQAAAAkAAAD7//r/AQABAAgAAAD7//v/AQABAAkAAAD8//r/AQACAAgAAAD8//v/AQACAAkAAAADAP//AQAAAAYAAAADAAAAAQAAAAcAAAAEAP//AQABAAYAAAAEAAAAAQABAAcAAAAFAP//AQACAAYAAAAFAAAAAQACAAcAAAD6//7/AQAKAAsAAAD+//n/AQAJAAcAAAD+//r/AQAJAAgAAAABAPr/AQAJAAkAAAADAPz/AQALAAsAAAD///3/AQAMAAsAAAD+//7/AQANAAsAAAA=")
+tile_map_data = PackedByteArray("AAD7/wMAAQAFAAcAAAD7/wQAAQAFAAgAAAD7/wUAAQAFAAkAAAD8/wMAAQAGAAcAAAD8/wQAAQAGAAgAAAD8/wUAAQAGAAkAAAD6//r/AQAAAAgAAAD6//v/AQAAAAkAAAD7//r/AQABAAgAAAD7//v/AQABAAkAAAD8//r/AQACAAgAAAD8//v/AQACAAkAAAADAP//AQAAAAYAAAADAAAAAQAAAAcAAAAEAP//AQABAAYAAAAEAAAAAQABAAcAAAAFAP//AQACAAYAAAAFAAAAAQACAAcAAAD6//7/AQAKAAsAAAD+//n/AQAJAAcAAAD+//r/AQAJAAgAAAABAPr/AQAJAAkAAAADAPz/AQALAAsAAAA=")
 tile_set = SubResource("TileSet_wqnns")
 
 [node name="Misc_Behind" type="TileMapLayer" parent="Misc" unique_id=760091237]
@@ -5096,16 +5088,68 @@ tile_set = SubResource("TileSet_p57ef")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=192047674]
 environment = SubResource("Environment_iywne")
 
+[node name="Skeleton" parent="." unique_id=1450286213 instance=ExtResource("8_gee14")]
+position = Vector2(-30, -59)
+
 [node name="Orc" parent="." unique_id=608689109 instance=ExtResource("6_p57ef")]
-position = Vector2(-64, 18)
+position = Vector2(-38, 23)
 
-[node name="Orc2" parent="." unique_id=1144255722 instance=ExtResource("6_p57ef")]
-position = Vector2(-68, -37)
+[node name="Orc2" parent="." unique_id=1274854081 instance=ExtResource("6_p57ef")]
+position = Vector2(-60, -10)
 
-[node name="Orc3" parent="." unique_id=484425815 instance=ExtResource("6_p57ef")]
-position = Vector2(56, 69)
+[node name="Skeleton2" parent="." unique_id=1968433974 instance=ExtResource("8_gee14")]
+position = Vector2(69, 62)
 
-[node name="Orc4" parent="." unique_id=1994748015 instance=ExtResource("6_p57ef")]
-position = Vector2(42, -31)
+[node name="Skeleton3" parent="." unique_id=1143864215 instance=ExtResource("8_gee14")]
+position = Vector2(0, 54)
 
-[connection signal="body_entered" from="MasqueProjectile" to="MasqueProjectile" method="_on_body_entered"]
+[node name="Skeleton4" parent="." unique_id=1323836743 instance=ExtResource("8_gee14")]
+position = Vector2(-71, 38)
+
+[node name="Skeleton5" parent="." unique_id=1942569976 instance=ExtResource("8_gee14")]
+position = Vector2(8, -29)
+
+[node name="Skeleton6" parent="." unique_id=1762350483 instance=ExtResource("8_gee14")]
+position = Vector2(-65, -44)
+
+[node name="Orc3" parent="." unique_id=1267446036 instance=ExtResource("6_p57ef")]
+position = Vector2(58, -32)
+
+[node name="Orc4" parent="." unique_id=1343048865 instance=ExtResource("6_p57ef")]
+position = Vector2(24, -58)
+
+[node name="Skeleton7" parent="." unique_id=598278387 instance=ExtResource("8_gee14")]
+position = Vector2(37, 4)
+
+[node name="Skeleton8" parent="." unique_id=528324980 instance=ExtResource("8_gee14")]
+position = Vector2(-40, 61)
+
+[node name="Skeleton9" parent="." unique_id=2048156124 instance=ExtResource("8_gee14")]
+position = Vector2(-4, 23)
+
+[node name="Skeleton10" parent="." unique_id=1813881303 instance=ExtResource("8_gee14")]
+position = Vector2(-20, -8)
+
+[node name="Skeleton11" parent="." unique_id=1792464253 instance=ExtResource("8_gee14")]
+position = Vector2(-28, -33)
+
+[node name="Skeleton12" parent="." unique_id=504242982 instance=ExtResource("8_gee14")]
+position = Vector2(-3, -49)
+
+[node name="Skeleton13" parent="." unique_id=1947917995 instance=ExtResource("8_gee14")]
+position = Vector2(-83, -48)
+
+[node name="Orc5" parent="." unique_id=563648677 instance=ExtResource("6_p57ef")]
+position = Vector2(-89, 14)
+
+[node name="Skeleton14" parent="." unique_id=1913818710 instance=ExtResource("8_gee14")]
+position = Vector2(-82, 59)
+
+[node name="Orc6" parent="." unique_id=884433526 instance=ExtResource("6_p57ef")]
+position = Vector2(26, 69)
+
+[node name="Orc7" parent="." unique_id=1767895800 instance=ExtResource("6_p57ef")]
+position = Vector2(50, 40)
+
+[node name="Skeleton15" parent="." unique_id=1266355302 instance=ExtResource("8_gee14")]
+position = Vector2(72, -48)
