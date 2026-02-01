@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dup12quanthcb"]
+
+[ext_resource type="Script" uid="uid://bsaipe760aitj" path="res://scripts/spawner.gd" id="1_2vbf6"]
+
+[node name="Spawner" type="Marker2D" unique_id=1171730071]
+script = ExtResource("1_2vbf6")
+
+[node name="Timer" type="Timer" parent="." unique_id=838474091]
+wait_time = 3.0
+autostart = true
