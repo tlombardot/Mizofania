@@ -96,12 +96,13 @@ func _process_movement_logic():
 		elif velocity.x > 0.1: sprite.flip_h = false
 
 func scan_for_enemies():
-	# Si on a une cible et qu'elle est toujours valide (vivante)
 	if is_instance_valid(target):
 		if "current_state" in target and target.current_state == State.DEAD: target = null; enter_wander_state(); return
 		
-		# Si c'est le joueur, on vérifie s'il est toujours considéré comme ennemi
-		# (S'il m'a tapé, target reste assigné donc je continue de taper)
+		# SI C'EST LE JOUEUR, on vérifie s'il est un masque. Si c'est un masque, on arrête de le chasser.
+		if target.is_in_group("player") and target.get("espece_actuelle") == "masque":
+			target = null; enter_wander_state(); return
+
 		nav_agent.target_position = target.global_position
 		if current_state == State.IDLE: current_state = State.CHASE
 		if global_position.distance_to(target.global_position) > 300: target = null; enter_wander_state()
@@ -116,14 +117,17 @@ func scan_for_enemies():
 	for c in candidats:
 		if c == self or not is_instance_valid(c): continue
 		if "current_state" in c and c.current_state == State.DEAD: continue
-		if "espece_actuelle" in c and c.espece_actuelle == "masque": continue
 		
-		var c_espece = ""
-		if "espece" in c: c_espece = c.espece
-		elif "espece_actuelle" in c: c_espece = c.espece_actuelle
+		var c_espece = "inconnue"
+		if c.is_in_group("player"):
+			if "espece_actuelle" in c:
+				c_espece = c.espece_actuelle
+				if c_espece == "masque": continue # Ignore masque
+		elif "espece" in c:
+			c_espece = c.espece
 		
 		# Attaque si espèce différente
-		if c_espece != self.espece:
+		if c_espece != "" and c_espece != self.espece:
 			var d = global_position.distance_to(c.global_position)
 			if d < dist_min:
 				raycast.target_position = to_local(c.global_position)
@@ -136,6 +140,13 @@ func scan_for_enemies():
 
 func _check_attack_range():
 	if is_instance_valid(target) and can_attack:
+		# --- CORRECTION ICI : SÉCURITÉ ANTI-MASQUE ---
+		# On revérifie au dernier moment si la cible est devenue un masque
+		if target.is_in_group("player") and target.get("espece_actuelle") == "masque":
+			target = null
+			enter_wander_state()
+			return # On annule tout, pas d'attaque sur le masque !
+			
 		if global_position.distance_to(target.global_position) <= attack_range: lancer_une_attaque()
 
 func enter_wander_state():
@@ -161,10 +172,15 @@ func lancer_une_attaque():
 	if is_instance_valid(target): sprite.flip_h = (target.global_position.x < global_position.x)
 
 func _on_animation_finished():
+	if not is_inside_tree(): return
 	if current_state == State.DEAD: await get_tree().create_timer(3.0).timeout; queue_free(); return
 	if sprite.animation in attack_animations_list:
 		if is_instance_valid(target) and global_position.distance_to(target.global_position) < attack_range + 20:
-			if target.has_method("take_damage"): target.take_damage(damage, self)
+			# Sécurité supplémentaire au moment de l'impact
+			if target.is_in_group("player") and target.get("espece_actuelle") == "masque":
+				pass # On ne tape pas
+			elif target.has_method("take_damage"): 
+				target.take_damage(damage, self)
 		current_state = State.IDLE
 		await get_tree().create_timer(attack_cooldown).timeout
 		can_attack = true
@@ -173,16 +189,10 @@ func take_damage(amount, attacker = null):
 	if current_state == State.DEAD: return
 	health -= amount
 	
-	# TRAHISON : Si le joueur m'attaque, JE L'ATTAQUE (même si même espèce)
-	if is_instance_valid(attacker) and attacker.is_in_group("player"):
+	# TRAHISON : Si on m'attaque, je contre-attaque, MÊME si c'est un ami
+	if is_instance_valid(attacker) and attacker != self:
 		target = attacker
 		current_state = State.CHASE
-		
-		# ALERTE LES COPAINS (optionnel mais cool)
-		var copains = get_tree().get_nodes_in_group("ennemi")
-		for c in copains:
-			if c != self and c.espece == self.espece and global_position.distance_to(c.global_position) < 200:
-				if "target" in c: c.target = attacker; c.current_state = State.CHASE
 
 	sprite.modulate = Color.RED
 	var t = create_tween()

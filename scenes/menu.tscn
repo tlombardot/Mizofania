@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://bd4783aqb4i3m"]
 
-[ext_resource type="Script" uid="uid://cero0g7qod7hl" path="res://scripts/menu.gd" id="1_yqeox"]
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_yqeox"]
 [ext_resource type="Texture2D" uid="uid://cbjyfn8ij8bka" path="res://assets/UIBundle/FreeHorrorUi.png" id="2_vjb58"]
 [ext_resource type="AudioStream" uid="uid://cjgjttunmxx05" path="res://assets/sound/menu.mp3" id="3_con2f"]
 
@@ -1140,10 +1140,11 @@ font_size = 14
 [node name="Menu" type="Control" unique_id=255204015]
 layout_mode = 3
 anchors_preset = 0
-offset_left = -5.0
-offset_top = -21.0
-offset_right = 103.0
-offset_bottom = 46.0
+offset_left = -234.0
+offset_top = -144.0
+offset_right = -126.0
+offset_bottom = -77.0
+scale = Vector2(3, 3)
 script = ExtResource("1_yqeox")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1012236855]

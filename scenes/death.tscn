@@ -1,7 +1,7 @@
-[gd_scene format=4 uid="uid://hnvyykl11vm0"]
+[gd_scene format=4 uid="uid://cs6v3b517wglf"]
 
 [ext_resource type="Texture2D" uid="uid://cbjyfn8ij8bka" path="res://assets/UIBundle/FreeHorrorUi.png" id="1_0hhgj"]
-[ext_resource type="Script" uid="uid://c23d1kbat8rk6" path="res://scripts/death.gd" id="1_w8wr1"]
+[ext_resource type="Script" path="res://scripts/death.gd" id="1_w8wr1"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w8wr1"]
 texture = ExtResource("1_0hhgj")
@@ -919,8 +919,13 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -248.0
+offset_top = -163.0
+offset_right = -248.0
+offset_bottom = -163.0
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(3, 3)
 script = ExtResource("1_w8wr1")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=938364711]

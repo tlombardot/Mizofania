@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cbjyfn8ij8bka" path="res://assets/UIBundle/FreeHorrorUi.png" id="7_ui_atlas"]
 [ext_resource type="Texture2D" uid="uid://btls0td1brjv2" path="res://assets/progress_bar/pb_progress_vitalite.png" id="8_ur7pv"]
 [ext_resource type="Texture2D" uid="uid://bb8mds2hd72l1" path="res://assets/progress_bar/pb_progress_sante.png" id="9_y4r1p"]
-[ext_resource type="Texture2D" path="res://assets/progress_bar/jaugecooldown_empty.png" id="10_d2wvv"]
+[ext_resource type="Texture2D" uid="uid://ba6sp0ac81w08" path="res://assets/progress_bar/jaugecooldown_empty.png" id="10_d2wvv"]
 [ext_resource type="Texture2D" uid="uid://cbsvirqoxmfck" path="res://assets/progress_bar/jaugecooldown_progress.png" id="11_3v2ag"]
 [ext_resource type="Texture2D" uid="uid://ckk4r7rkesl4m" path="res://assets/progress_bar/pb_progress_xp.png" id="12_3v2ag"]
 
@@ -50,7 +50,7 @@ y_sort_enabled = true
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_3vyb7")
-temps_survie_masque = 10.0
+temps_survie_masque = 6.0
 xp_cost_possession = 10
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=775170457]
@@ -77,9 +77,9 @@ wait_time = 5.0
 one_shot = true
 
 [node name="Vitalite" type="CanvasLayer" parent="." unique_id=2107433723]
-offset = Vector2(300, 20)
-scale = Vector2(3, 3)
-transform = Transform2D(3, 0, 0, 3, 300, 20)
+offset = Vector2(20, 100)
+scale = Vector2(4, 4)
+transform = Transform2D(4, 0, 0, 4, 20, 100)
 
 [node name="GroupeVitalite" type="HBoxContainer" parent="Vitalite" unique_id=883416955]
 offset_right = 85.0
@@ -100,8 +100,8 @@ texture_progress = ExtResource("8_ur7pv")
 
 [node name="Sante" type="CanvasLayer" parent="." unique_id=318329176]
 offset = Vector2(20, 20)
-scale = Vector2(3, 3)
-transform = Transform2D(3, 0, 0, 3, 20, 20)
+scale = Vector2(4, 4)
+transform = Transform2D(4, 0, 0, 4, 20, 20)
 
 [node name="GroupeSante" type="HBoxContainer" parent="Sante" unique_id=1037603876]
 offset_right = 82.0
@@ -121,8 +121,9 @@ texture_under = ExtResource("6_fjrip")
 texture_progress = ExtResource("9_y4r1p")
 
 [node name="CooldownUI" type="CanvasLayer" parent="." unique_id=871506566]
-offset = Vector2(600, 20)
-transform = Transform2D(1, 0, 0, 1, 600, 20)
+offset = Vector2(3200, 20)
+scale = Vector2(2, 2)
+transform = Transform2D(2, 0, 0, 2, 3200, 20)
 
 [node name="JaugeCooldown" type="TextureProgressBar" parent="CooldownUI" unique_id=1991994945]
 offset_right = 29.0
@@ -134,15 +135,22 @@ texture_under = ExtResource("10_d2wvv")
 texture_progress = ExtResource("11_3v2ag")
 
 [node name="XP" type="CanvasLayer" parent="." unique_id=1175652625]
-offset = Vector2(20, 600)
-scale = Vector2(3, 3)
-transform = Transform2D(3, 0, 0, 3, 20, 600)
+offset = Vector2(400, 20)
+scale = Vector2(4, 4)
+transform = Transform2D(4, 0, 0, 4, 400, 20)
 
-[node name="JaugeXP" type="TextureProgressBar" parent="XP" unique_id=862331281]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="GroupeXP" type="HBoxContainer" parent="XP" unique_id=991378635]
+offset_right = 82.0
+offset_bottom = 15.0
+size_flags_vertical = 0
+
+[node name="JaugeXP" type="TextureProgressBar" parent="XP/GroupeXP" unique_id=862331281]
+layout_mode = 2
 texture_under = ExtResource("6_fjrip")
 texture_progress = ExtResource("12_3v2ag")
+
+[node name="LabelNiveau" type="Label" parent="XP/GroupeXP" unique_id=910925844]
+layout_mode = 2
 
 [connection signal="timeout" from="TimerPossession" to="." method="_on_vitalite_empty"]
 [connection signal="timeout" from="DeathTimer" to="." method="mourir"]

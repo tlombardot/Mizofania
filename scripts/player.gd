@@ -59,8 +59,9 @@ var visual_target: Node2D = null
 @onready var timer_cooldown = $TimerCooldown
 @onready var timer_vitalite = $TimerPossession
 @onready var timer_mort = $DeathTimer
-@onready var jauge_xp = $XP/JaugeXP
-@onready var label_niveau = $XP/LabelNiveau 
+
+@onready var jauge_xp = $XP/GroupeXP/JaugeXP
+@onready var label_niveau = $XP/GroupeXP/LabelNiveau
 
 var masque_scene = preload("res://scenes/masque_projectile.tscn")
 var death_scene_path = "res://scenes/death.tscn"
@@ -84,16 +85,12 @@ func _ready():
 	original_scale = sprite.scale
 	if collision_shape.shape: original_shape = collision_shape.shape.duplicate()
 	
-	timer_vitalite.timeout.connect(_on_vitalite_empty)
-	timer_mort.timeout.connect(mourir)
-	if not sprite.animation_finished.is_connected(_on_animation_finished):
-		sprite.animation_finished.connect(_on_animation_finished)
+	if not timer_vitalite.timeout.is_connected(_on_vitalite_empty): timer_vitalite.timeout.connect(_on_vitalite_empty)
+	if not timer_mort.timeout.is_connected(mourir): timer_mort.timeout.connect(mourir)
+	if not sprite.animation_finished.is_connected(_on_animation_finished): sprite.animation_finished.connect(_on_animation_finished)
 	
-	if not InputMap.has_action("attack"):
-		InputMap.add_action("attack"); InputMap.action_add_event("attack", InputEventMouseButton.new())
-	if not InputMap.has_action("eject"):
-		var k = InputEventKey.new(); k.keycode = KEY_SPACE
-		InputMap.add_action("eject"); InputMap.action_add_event("eject", k)
+	if not InputMap.has_action("attack"): InputMap.add_action("attack"); InputMap.action_add_event("attack", InputEventMouseButton.new())
+	if not InputMap.has_action("eject"): var k = InputEventKey.new(); k.keycode = KEY_SPACE; InputMap.add_action("eject"); InputMap.action_add_event("eject", k)
 
 	camera.top_level = true
 	camera.position_smoothing_enabled = true
@@ -224,7 +221,8 @@ func gestion_action_masque():
 			print("Pas de cible à portée !")
 
 func tirer_projectile_vers(target_pos, max_dist_override, corps_a_ignorer):
-	if current_xp >= xp_cost_possession: current_xp -= xp_cost_possession
+	if health > 0 and current_xp >= xp_cost_possession:
+		current_xp -= xp_cost_possession
 	
 	var masque = masque_scene.instantiate()
 	var dir = (target_pos - global_position).normalized()
@@ -270,6 +268,14 @@ func ejecter_masque(corps_est_mort: bool):
 		rater_possession(global_position)
 
 func reussir_possession(nouvel_hote):
+	# --- RESET CRITIQUE POUR EVITER LE BLOCAGE ---
+	is_control_locked = false 
+	is_attacking = false
+	can_attack = true
+	parasite_target = null
+	sprite.modulate = Color.WHITE
+	# ---------------------------------------------
+
 	visible = true
 	collision_shape.set_deferred("disabled", false)
 	timer_mort.stop()
@@ -290,14 +296,11 @@ func reussir_possession(nouvel_hote):
 	if "current_vitality_time" in nouvel_hote and nouvel_hote.current_vitality_time > 0:
 		duree_base = nouvel_hote.current_vitality_time
 	
-	# --- FIX BUG CONTROLE BLOQUÉ ---
-	if "niveau_requis" in nouvel_hote and current_level < nouvel_hote.niveau_requis:
-		is_control_locked = true
-		duree_base = duree_base * 2.0
-		sprite.modulate = Color(0.7, 0.7, 0.7, 1.0)
-	else:
-		is_control_locked = false # ON DÉBLOQUE SI NIVEAU OK
-		sprite.modulate = Color.WHITE
+	if "niveau_requis" in nouvel_hote:
+		if current_level < nouvel_hote.niveau_requis:
+			is_control_locked = true
+			duree_base = duree_base * 2.0
+			sprite.modulate = Color(0.7, 0.7, 0.7, 1.0)
 
 	if nouvel_hote.scene_file_path: host_scene_path = nouvel_hote.scene_file_path
 	var ennemi_sprite = nouvel_hote.get_node("AnimatedSprite2D")
@@ -361,14 +364,8 @@ func _on_animation_finished():
 	if "attack" in sprite.animation:
 		var ennemis = get_tree().get_nodes_in_group("ennemi")
 		for e in ennemis:
-			var is_enemy = false
-			if "espece" in e and e.espece != self.espece_actuelle: is_enemy = true
-			
-			# TRAHISON POSSIBLE : Si c'est ma propre espèce, je peux quand même taper
-			# Pour autoriser le Friendly Fire du joueur : On vérifie juste la distance
 			if global_position.distance_to(e.global_position) < 50:
 				if e.has_method("take_damage"): e.take_damage(damage, self)
-		
 		sprite.play("idle")
 		is_attacking = false
 		await get_tree().create_timer(attack_cooldown).timeout
@@ -390,6 +387,13 @@ func rater_possession(pos):
 	devenir_masque(false)
 
 func devenir_masque(is_safe):
+	# --- RESET CRITIQUE ---
+	is_control_locked = false
+	is_attacking = false
+	can_attack = true
+	parasite_target = null
+	# ----------------------
+	
 	current_state = State.MASQUE
 	espece_actuelle = "masque"
 	visible = true
