@@ -1,14 +1,11 @@
 extends CharacterBody2D
 
-enum State { MASQUE, POSSEDE, MORT }
-var current_state = State.MASQUE
+enum State { MASK, POSSESSED, DEAD }
+var current_state = State.MASK
 
-# --- PARAMÈTRES ---
-@export var rayon_possession_survie = 32.0
-@export var temps_survie_masque = 5.0
-@export var duree_possession_max = 30.0
-@export var cooldown_tir = 5.0
-@export var distance_premier_saut = 80.0
+# --- CONFIG ---
+@export var radius_possession_survival = 32.0
+@export var time_survival_mask = 5.0
 
 @export_group("RPG System")
 @export var xp_cost_possession = 15
@@ -16,34 +13,27 @@ var current_state = State.MASQUE
 @export var xp_growth_factor = 1.5
 
 # --- Stats ---
-var speed = 150.0
+var speed = 0
 var max_health = 100.0
 var damage = 10.0
 var attack_cooldown = 1.0
-var ejection_range_actuelle = 5 * 16.0
-var attack_range_actuelle = 40.0
+var current_ejection_range = 5 * 16.0
+var current_attack_range = 20.0
 
-# --- État ---
+# --- State ---
 var health = 100.0
 var current_xp = 0
 var current_level = 1
 var max_xp_current_level = 100
 
-var espece_actuelle = "masque"
-var premiere_apparition = true
-var masque_actif = null
+var current_species = "mask"
+var first_appearance = true
+var active_mask = null
 var is_dying = false
 var input_locked = true
 var can_attack = true
 var is_attacking = false
 var host_scene_path = ""
-
-# --- Mode Parasite ---
-var is_control_locked = false 
-var parasite_nav_agent: NavigationAgent2D = null
-var parasite_target: Node2D = null
-var parasite_state = 0 
-var parasite_wander_timer = 0.0
 
 var visual_target: Node2D = null
 
@@ -51,19 +41,21 @@ var visual_target: Node2D = null
 @onready var collision_shape = $CollisionShape2D
 @onready var camera = $Camera2D
 
-# UI
-@onready var jauge_sante = $Sante/GroupeSante/JaugeSante
-@onready var groupe_vitalite = $Vitalite/GroupeVitalite
-@onready var jauge_vitalite = $Vitalite/GroupeVitalite/JaugeVitalite
-@onready var jauge_cooldown = $CooldownUI/JaugeCooldown
-@onready var timer_cooldown = $TimerCooldown
-@onready var timer_vitalite = $TimerPossession
-@onready var timer_mort = $DeathTimer
+@onready var health_gauge = $Health/HealthGroup/HealthGauge
+@onready var health_group = $Health/HealthGroup
+@onready var vitality_group = $Vitality/VitalityGroup
+@onready var vitality_gauge = $Vitality/VitalityGroup/VitalityGauge
+@onready var cooldown_gauge = $CooldownUI/CooldownGauge
+@onready var cooldown_timer = $CooldownTimer
+@onready var vitality_timer = $PossessionTimer
+@onready var death_timer = $DeathTimer
 
-@onready var jauge_xp = $XP/GroupeXP/JaugeXP
-@onready var label_niveau = $XP/GroupeXP/LabelNiveau
+@onready var xp_gauge = $XP/XPGroup/XPGauge
+@onready var level_label = $XP/XPGroup/LevelLabel
 
-var masque_scene = preload("res://scenes/masque_projectile.tscn")
+@onready var possession_sound = $PossessionSound
+
+var mask_scene = preload("res://scenes/projectile_mask.tscn")
 var death_scene_path = "res://scenes/death.tscn"
 var original_frames = null
 var original_scale = Vector2.ONE
@@ -72,12 +64,6 @@ var original_shape = null
 func _ready():
 	add_to_group("player")
 	
-	parasite_nav_agent = NavigationAgent2D.new()
-	parasite_nav_agent.path_desired_distance = 20.0
-	parasite_nav_agent.target_desired_distance = 20.0
-	parasite_nav_agent.avoidance_enabled = true
-	add_child(parasite_nav_agent)
-	
 	health = 100.0; max_health = 100.0; speed = 150.0
 	max_xp_current_level = xp_to_next_level_base
 	
@@ -85,12 +71,12 @@ func _ready():
 	original_scale = sprite.scale
 	if collision_shape.shape: original_shape = collision_shape.shape.duplicate()
 	
-	if not timer_vitalite.timeout.is_connected(_on_vitalite_empty): timer_vitalite.timeout.connect(_on_vitalite_empty)
-	if not timer_mort.timeout.is_connected(mourir): timer_mort.timeout.connect(mourir)
+	if not vitality_timer.timeout.is_connected(_on_vitality_empty): vitality_timer.timeout.connect(_on_vitality_empty)
+	if not death_timer.timeout.is_connected(death): death_timer.timeout.connect(death)
 	if not sprite.animation_finished.is_connected(_on_animation_finished): sprite.animation_finished.connect(_on_animation_finished)
 	
 	if not InputMap.has_action("attack"): InputMap.add_action("attack"); InputMap.action_add_event("attack", InputEventMouseButton.new())
-	if not InputMap.has_action("eject"): var k = InputEventKey.new(); k.keycode = KEY_SPACE; InputMap.add_action("eject"); InputMap.action_add_event("eject", k)
+	if not InputMap.has_action("eject_or_possess"): var k = InputEventKey.new(); k.keycode = KEY_SPACE; InputMap.add_action("eject_or_possess"); InputMap.action_add_event("eject_or_possess", k)
 
 	camera.top_level = true
 	camera.position_smoothing_enabled = true
@@ -100,51 +86,52 @@ func _ready():
 	input_locked = false
 	devenir_masque(true)
 
-func _physics_process(delta):
-	if current_state == State.MASQUE and is_instance_valid(masque_actif):
-		camera.global_position = masque_actif.global_position
+func _physics_process(_delta):
+	if current_state == State.MASK and is_instance_valid(active_mask) and active_mask is Node2D:
+		camera.global_position = active_mask.global_position
 	else:
 		camera.global_position = global_position
 
-	if input_locked or current_state == State.MORT: return
+	if input_locked or current_state == State.DEAD: return
 	
-	if jauge_sante: jauge_sante.value = health; jauge_sante.max_value = max_health
-	if jauge_xp: jauge_xp.value = current_xp; jauge_xp.max_value = max_xp_current_level
-	if label_niveau: label_niveau.text = "Niv. " + str(current_level)
+	# UI
+	if health_gauge: 
+		health_gauge.value = health;
+		health_gauge.max_value = max_health
+		health_group.visible = (current_state != State.MASK)
+	if xp_gauge: xp_gauge.value = current_xp; xp_gauge.max_value = max_xp_current_level
+	if level_label: level_label.text = str(current_level)
 	
-	if groupe_vitalite:
-		groupe_vitalite.visible = (current_state == State.POSSEDE or (current_state == State.MASQUE and not timer_mort.is_stopped()))
-		if current_state == State.POSSEDE: jauge_vitalite.value = timer_vitalite.time_left; jauge_vitalite.max_value = timer_vitalite.wait_time
-		elif current_state == State.MASQUE: jauge_vitalite.value = timer_mort.time_left; jauge_vitalite.max_value = temps_survie_masque
+	if vitality_group:
+		vitality_group.visible = (current_state == State.POSSESSED or (current_state == State.MASK and not death_timer.is_stopped()))
+		if current_state == State.POSSESSED: 
+			vitality_gauge.value = vitality_timer.time_left
+			vitality_gauge.max_value = vitality_timer.wait_time
+		elif current_state == State.MASK: 
+			vitality_gauge.value = death_timer.time_left 
+			vitality_gauge.max_value = time_survival_mask
 	
-	if jauge_cooldown:
+	if cooldown_gauge:
 		var ratio = 0.0
-		if not timer_cooldown.is_stopped(): ratio = 1.0 - (timer_cooldown.time_left / timer_cooldown.wait_time)
+		if not cooldown_timer.is_stopped(): ratio = 1.0 - (cooldown_timer.time_left / cooldown_timer.wait_time)
 		else: ratio = 1.0
-		jauge_cooldown.value = ratio * 100
+		cooldown_gauge.value = ratio * 100
 
-	if current_state == State.MASQUE: update_visual_target_and_indicators()
+	# États
+	if current_state == State.MASK: update_visual_target_and_indicators()
 	else: reset_all_enemy_tints(); update_enemies_red_dots_only(); visual_target = null; queue_redraw()
 
 	match current_state:
-		State.MASQUE:
+		State.MASK:
 			velocity = Vector2.ZERO
 			move_and_slide()
-			if Input.is_action_just_pressed("eject") and timer_cooldown.is_stopped():
-				gestion_action_masque()
+			if Input.is_action_just_pressed("eject_or_possess") and cooldown_timer.is_stopped():
+				mask_action_management()
 
-		State.POSSEDE:
-			if is_control_locked:
-				_run_parasite_ai(delta)
-				move_and_slide()
-				if Input.is_action_just_pressed("eject"):
-					if not timer_cooldown.is_stopped(): print("Attente...")
-					elif timer_vitalite.time_left < (timer_vitalite.wait_time - 0.5): ejecter_masque(false)
-				return 
-
+		State.POSSESSED:
 			if is_attacking: velocity = Vector2.ZERO; move_and_slide(); return 
 			
-			var direction = Input.get_vector("gauche", "droite", "haut", "bas")
+			var direction = Input.get_vector("left", "right", "up", "down")
 			if direction:
 				velocity = direction * speed
 				sprite.play("walk")
@@ -156,188 +143,141 @@ func _physics_process(delta):
 			move_and_slide()
 			
 			if Input.is_action_just_pressed("attack") and can_attack: lancer_attaque_joueur()
-			if Input.is_action_just_pressed("eject"):
-				if not timer_cooldown.is_stopped(): print("Attente...")
-				elif timer_vitalite.time_left < (timer_vitalite.wait_time - 0.5): ejecter_masque(false)
+			if Input.is_action_just_pressed("eject_or_possess"):
+				if cooldown_timer.is_stopped():
+					if vitality_timer.time_left < (vitality_timer.wait_time - 0.5): eject_mask(false)
 
-func _run_parasite_ai(delta):
-	if not is_instance_valid(parasite_target):
-		parasite_target = _find_nearest_enemy_for_parasite()
-		parasite_state = 0 
-	else:
-		if "current_state" in parasite_target and parasite_target.current_state == 4:
-			parasite_target = null; return
+func mask_action_management():
+	
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	var nearest_mob = null
+	
+	var min_dist = radius_possession_survival 
 
-	if is_instance_valid(parasite_target):
-		var dist = global_position.distance_to(parasite_target.global_position)
-		if dist <= attack_range_actuelle and can_attack: parasite_state = 2
-		else: parasite_state = 1
-	else: parasite_state = 0
+	for e in enemies:
+		if not is_instance_valid(e): continue
+		if e.get("health") <= 0: continue
+		if "current_state" in e and e.current_state == 4: continue # Mort
 
-	if parasite_state == 2:
-		velocity = Vector2.ZERO
-		lancer_attaque_joueur()
-	elif parasite_state == 1:
-		if is_instance_valid(parasite_target):
-			parasite_nav_agent.target_position = parasite_target.global_position
-			var next = parasite_nav_agent.get_next_path_position()
-			var dir = global_position.direction_to(next)
-			velocity = dir * speed
-			sprite.play("walk"); sprite.flip_h = dir.x < 0
-	elif parasite_state == 0:
-		parasite_wander_timer -= delta
-		if parasite_wander_timer <= 0:
-			parasite_wander_timer = randf_range(1.0, 3.0)
-			var random_offset = Vector2.RIGHT.rotated(randf() * TAU) * 100
-			parasite_nav_agent.target_position = global_position + random_offset
-		if parasite_nav_agent.is_navigation_finished():
-			velocity = Vector2.ZERO; sprite.play("idle")
-		else:
-			var next = parasite_nav_agent.get_next_path_position()
-			var dir = global_position.direction_to(next)
-			velocity = dir * speed
-			sprite.play("walk"); sprite.flip_h = dir.x < 0
+		var d = global_position.distance_to(e.global_position)
+		
+		if d <= min_dist:
+			min_dist = d
+			nearest_mob = e
+	
+	if nearest_mob:
+		fire_projectile_towards(nearest_mob.global_position, radius_possession_survival * 1.5, null)
 
-func _find_nearest_enemy_for_parasite():
-	var mobs = get_tree().get_nodes_in_group("ennemi")
-	var nearest = null; var min_dist = 400.0
-	for m in mobs:
-		if m == self: continue
-		if "current_state" in m and m.current_state == 4: continue
-		var is_enemy = false
-		if "espece" in m and m.espece != self.espece_actuelle: is_enemy = true
-		if is_enemy:
-			var d = global_position.distance_to(m.global_position)
-			if d < min_dist: min_dist = d; nearest = m
-	return nearest
-
-func gestion_action_masque():
-	if premiere_apparition:
-		tirer_projectile_vers(get_global_mouse_position(), distance_premier_saut, null)
-	else:
-		if is_instance_valid(visual_target):
-			tirer_projectile_vers(visual_target.global_position, ejection_range_actuelle, null)
-		else:
-			print("Pas de cible à portée !")
-
-func tirer_projectile_vers(target_pos, max_dist_override, corps_a_ignorer):
+func fire_projectile_towards(target_pos, max_dist_override, body_to_ignore):
 	if health > 0 and current_xp >= xp_cost_possession:
 		current_xp -= xp_cost_possession
 	
-	var masque = masque_scene.instantiate()
+	var mask = mask_scene.instantiate()
 	var dir = (target_pos - global_position).normalized()
-	var dist_reelle = global_position.distance_to(target_pos)
-	var final_dist = min(dist_reelle + 10, max_dist_override) 
+	var real_distance = global_position.distance_to(target_pos)
+	var final_distance = min(real_distance + 10, max_dist_override)
 	
-	masque.distance_max = final_dist
-	masque.vitesse = 450
-	masque.global_position = global_position + (dir * 20)
-	masque.look_at(global_position + dir * 100)
-	masque.player_ref = self
-	masque.corps_a_ignorer = corps_a_ignorer
+	mask.distance_max = final_distance
+	mask.speed = 450
+	mask.global_position = global_position + (dir * 20)
+	mask.look_at(global_position + dir * 100)
+	mask.player_ref = self
+	mask.body_to_ignore = body_to_ignore
 	
-	get_parent().add_child(masque)
+	get_parent().add_child(mask)
 	
-	masque_actif = masque
+	active_mask = mask
 	visible = false
 	collision_shape.set_deferred("disabled", true)
-	timer_vitalite.stop()
-	current_state = State.MASQUE
-	if timer_cooldown: timer_cooldown.start()
+	vitality_timer.stop()
+	current_state = State.MASK
+	if cooldown_timer: cooldown_timer.start()
 
-func ejecter_masque(corps_est_mort: bool):
-	if current_state == State.MORT: return
+func eject_mask(body_is_dead: bool):
+	if current_state == State.DEAD: return
 	
-	var mob_lache = null
+	var dropped_mob = null
 	
-	if not corps_est_mort and host_scene_path != "":
+	if not body_is_dead and host_scene_path != "":
 		var scene = load(host_scene_path)
 		if scene:
 			var mob = scene.instantiate()
 			mob.global_position = global_position
 			mob.health = health
-			var temps_restant = timer_vitalite.time_left
-			if is_control_locked: temps_restant = temps_restant / 2.0
-			mob.current_vitality_time = temps_restant
+			mob.current_vitality_time = vitality_timer.time_left
 			get_parent().add_child(mob)
-			mob_lache = mob
+			dropped_mob = mob
 	
-	if not corps_est_mort:
-		tirer_projectile_vers(get_global_mouse_position(), ejection_range_actuelle, mob_lache)
+	if not body_is_dead:
+		fire_projectile_towards(get_global_mouse_position(), current_ejection_range, dropped_mob)
 	else:
-		rater_possession(global_position)
+		miss_possession(global_position)
 
-func reussir_possession(nouvel_hote):
-	# --- RESET CRITIQUE POUR EVITER LE BLOCAGE ---
-	is_control_locked = false 
+func success_possession(new_host):
+	if possession_sound:
+		possession_sound.pitch_scale = randf_range(0.9, 1.1)
+		possession_sound.play()
+
 	is_attacking = false
 	can_attack = true
-	parasite_target = null
 	sprite.modulate = Color.WHITE
-	# ---------------------------------------------
 
 	visible = true
 	collision_shape.set_deferred("disabled", false)
-	timer_mort.stop()
-	current_state = State.POSSEDE
-	premiere_apparition = false
-	global_position = nouvel_hote.global_position
+	death_timer.stop()
+	current_state = State.POSSESSED
+	first_appearance = false
+	global_position = new_host.global_position
 	
-	health = nouvel_hote.health
-	max_health = nouvel_hote.max_health
-	speed = nouvel_hote.speed
-	damage = nouvel_hote.damage
-	attack_cooldown = nouvel_hote.attack_cooldown
-	ejection_range_actuelle = nouvel_hote.ejection_range
-	espece_actuelle = nouvel_hote.espece
-	attack_range_actuelle = nouvel_hote.attack_range
-	var duree_base = nouvel_hote.max_vitality_duration
+	health = new_host.health
+	max_health = new_host.max_health
+	speed = new_host.speed
+	damage = new_host.damage
+	attack_cooldown = new_host.attack_cooldown
+	current_ejection_range = new_host.ejection_range
+	current_species = new_host.species
+	current_attack_range = new_host.attack_range
+	var base_duration = new_host.max_vitality_duration
 	
-	if "current_vitality_time" in nouvel_hote and nouvel_hote.current_vitality_time > 0:
-		duree_base = nouvel_hote.current_vitality_time
-	
-	if "niveau_requis" in nouvel_hote:
-		if current_level < nouvel_hote.niveau_requis:
-			is_control_locked = true
-			duree_base = duree_base * 2.0
-			sprite.modulate = Color(0.7, 0.7, 0.7, 1.0)
+	if "current_vitality_time" in new_host and new_host.current_vitality_time > 0:
+		base_duration = new_host.current_vitality_time
 
-	if nouvel_hote.scene_file_path: host_scene_path = nouvel_hote.scene_file_path
-	var ennemi_sprite = nouvel_hote.get_node("AnimatedSprite2D")
-	sprite.sprite_frames = ennemi_sprite.sprite_frames
-	sprite.scale = ennemi_sprite.scale
-	if ennemi_sprite.offset: sprite.offset = ennemi_sprite.offset
+	if new_host.scene_file_path: host_scene_path = new_host.scene_file_path
+	var enemy_sprite = new_host.get_node("AnimatedSprite2D")
+	sprite.sprite_frames = enemy_sprite.sprite_frames
+	sprite.scale = enemy_sprite.scale
+	if enemy_sprite.offset: sprite.offset = enemy_sprite.offset
 	
-	nouvel_hote.queue_free()
-	timer_vitalite.start(duree_base)
+	new_host.queue_free()
+	vitality_timer.start(base_duration)
 
 func _draw():
-	if current_state == State.MASQUE:
+	if current_state == State.MASK:
 		var alpha = 0.2 + (sin(Time.get_ticks_msec() * 0.005) * 0.1)
-		draw_circle(Vector2.ZERO, rayon_possession_survie, Color(0.2, 0.6, 1.0, alpha), true)
-		draw_circle(Vector2.ZERO, rayon_possession_survie, Color(0.2, 0.6, 1.0, 0.5), false, 1.0)
+		draw_circle(Vector2.ZERO, radius_possession_survival, Color(0.2, 0.6, 1.0, alpha), true)
+		draw_circle(Vector2.ZERO, radius_possession_survival, Color(0.2, 0.6, 1.0, 0.5), false, 1.0)
 
 func update_visual_target_and_indicators():
-	var ennemis = get_tree().get_nodes_in_group("ennemi")
-	var plus_proche = null
-	var d_min = rayon_possession_survie
-	for e in ennemis:
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	var closer = null
+	var d_min = radius_possession_survival
+	for e in enemies:
 		e.modulate = Color.WHITE
 		if e.has_method("update_visual_indicator"): e.update_visual_indicator(current_level)
 		if "current_state" in e and e.current_state == 4: continue
 		var d = global_position.distance_to(e.global_position)
-		if d < d_min: d_min = d; plus_proche = e
-	visual_target = plus_proche
+		if d < d_min: d_min = d; closer = e
+	visual_target = closer
 	if visual_target: visual_target.modulate = Color(0.4, 0.7, 1.0)
 	queue_redraw()
 
 func reset_all_enemy_tints():
-	var ennemis = get_tree().get_nodes_in_group("ennemi")
-	for e in ennemis: e.modulate = Color.WHITE
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for e in enemies: e.modulate = Color.WHITE
 
 func update_enemies_red_dots_only():
-	var ennemis = get_tree().get_nodes_in_group("ennemi")
-	for e in ennemis:
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for e in enemies:
 		if e.has_method("update_visual_indicator"): e.update_visual_indicator(current_level)
 
 func gain_xp(amount):
@@ -361,9 +301,12 @@ func lancer_attaque_joueur():
 	else: can_attack = true; is_attacking = false
 
 func _on_animation_finished():
+	if not is_instance_valid(sprite): return
+	
 	if "attack" in sprite.animation:
-		var ennemis = get_tree().get_nodes_in_group("ennemi")
-		for e in ennemis:
+		var enemies = get_tree().get_nodes_in_group("enemy")
+		for e in enemies:
+			if not is_instance_valid(e): continue
 			if global_position.distance_to(e.global_position) < 50:
 				if e.has_method("take_damage"): e.take_damage(damage, self)
 		sprite.play("idle")
@@ -371,42 +314,40 @@ func _on_animation_finished():
 		await get_tree().create_timer(attack_cooldown).timeout
 		can_attack = true
 
-func take_damage(amount, attacker = null):
+func take_damage(amount, _attacker = null):
 	if is_dying or health <= 0: return
 	health -= amount
 	sprite.modulate = Color.RED
 	var t = create_tween()
 	t.tween_property(sprite, "modulate", Color.WHITE, 0.1)
 	if health <= 0:
-		if current_state == State.POSSEDE: ejecter_masque(true)
-		else: mourir()
+		if current_state == State.POSSESSED: eject_mask(true)
+		else: death()
 
-func rater_possession(pos):
-	masque_actif = null
+func miss_possession(pos):
+	active_mask = null
 	global_position = pos
 	devenir_masque(false)
 
 func devenir_masque(is_safe):
-	# --- RESET CRITIQUE ---
-	is_control_locked = false
 	is_attacking = false
 	can_attack = true
-	parasite_target = null
-	# ----------------------
 	
-	current_state = State.MASQUE
-	espece_actuelle = "masque"
+	current_state = State.MASK
+	current_species = "mask"
 	visible = true
 	collision_shape.set_deferred("disabled", false)
 	health = 100.0; speed = 0
 	sprite.sprite_frames = original_frames; sprite.scale = original_scale
 	sprite.play("idle"); sprite.speed_scale = 1.0
 	if original_shape: collision_shape.shape = original_shape
-	timer_vitalite.stop()
-	if is_safe: premiere_apparition = true; timer_mort.stop()
-	else: premiere_apparition = false; timer_mort.start(temps_survie_masque)
+	vitality_timer.stop()
+	if is_safe: first_appearance = true; death_timer.stop()
+	else: first_appearance = false; death_timer.start(time_survival_mask)
 
-func _on_vitalite_empty(): ejecter_masque(true)
-func mourir():
-	is_dying = true; current_state = State.MORT
+func _on_vitality_empty():
+	eject_mask(true)
+
+func death():
+	is_dying = true; current_state = State.DEAD
 	get_tree().change_scene_to_file(death_scene_path)

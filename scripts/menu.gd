@@ -1,9 +1,7 @@
 extends Control
 
-func _on_bouton_jouer_pressed():
-	# Charge la scène de jeu
+func _on_bouton_play_pressed():
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
-func _on_bouton_quitter_pressed():
-	# Ferme le jeu
+func _on_bouton_exit_pressed():
 	get_tree().quit()

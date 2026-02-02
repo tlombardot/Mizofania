@@ -283,21 +283,22 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ok4f"]
 radius = 8.062258
 
-[node name="Knight" type="CharacterBody2D" unique_id=1615262158]
+[node name="Knight" type="CharacterBody2D" unique_id=1615262158 groups=["enemy"]]
 z_index = 1
 y_sort_enabled = true
+collision_layer = 4
+collision_mask = 3
 script = ExtResource("1_swm0g")
-espece = "chevalier"
+species = "knight"
 max_health = 100.0
 speed = 30.0
 damage = 40.0
 attack_cooldown = 2.0
-attack_range = 20.0
 max_vitality_duration = 40.0
 ejection_range = 100.0
-niveau_requis = 2
-xp_min = 70
-xp_max = 90
+required_level = 5
+xp_min = 50
+xp_max = 70
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=471218413]
 position = Vector2(-1, -7)
@@ -324,7 +325,7 @@ collide_with_bodies = false
 wait_time = 5.0
 one_shot = true
 
-[node name="IndicateurNiveau" type="ColorRect" parent="." unique_id=1744979789]
+[node name="LevelIndicator" type="ColorRect" parent="." unique_id=1744979789]
 visible = false
 z_index = 2
 offset_top = -20.000002

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://djvpbdio7ry3o"
-path="res://.godot/imported/jaugecooldown_filled.png-99b266d696b5fd26f6467ea026743e20.ctex"
+uid="uid://cq4yolliig36g"
+path="res://.godot/imported/mask_cooldown_empty.png-53f35db05d7a0ce05ccd8dec2b439586.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/progress_bar/jaugecooldown_filled.png"
-dest_files=["res://.godot/imported/jaugecooldown_filled.png-99b266d696b5fd26f6467ea026743e20.ctex"]
+source_file="res://assets/progress_bar/mask_cooldown_empty.png"
+dest_files=["res://.godot/imported/mask_cooldown_empty.png-53f35db05d7a0ce05ccd8dec2b439586.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt6rikskr5kkp"
-path="res://.godot/imported/Dungeon tileset.png-10e95b3301d744470432c5cc391c0770.ctex"
+uid="uid://bj448qn3l6rxj"
+path="res://.godot/imported/xplvl.png-349f4ec1f52d944285e4dcdd9d41bf5d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Dungeon tileset.png"
-dest_files=["res://.godot/imported/Dungeon tileset.png-10e95b3301d744470432c5cc391c0770.ctex"]
+source_file="res://assets/progress_bar/xplvl.png"
+dest_files=["res://.godot/imported/xplvl.png-349f4ec1f52d944285e4dcdd9d41bf5d.ctex"]
 
 [params]
 

@@ -248,7 +248,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_hu8b3"]
 radius = 8.0
 
-[node name="Orc" type="CharacterBody2D" unique_id=608689109 groups=["ennemi"]]
+[node name="Orc" type="CharacterBody2D" unique_id=608689109 groups=["enemy"]]
 z_index = 1
 y_sort_enabled = true
 collision_layer = 4
@@ -258,11 +258,10 @@ max_health = 80.0
 speed = 45.0
 damage = 20.0
 attack_cooldown = 1.5
-attack_range = 20.0
-ejection_range = 60.0
-niveau_requis = 2
-xp_min = 40
-xp_max = 70
+ejection_range = 70.0
+required_level = 2
+xp_min = 30
+xp_max = 50
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1169825597]
 position = Vector2(0, -7)
@@ -289,7 +288,7 @@ collide_with_bodies = false
 wait_time = 5.0
 one_shot = true
 
-[node name="IndicateurNiveau" type="ColorRect" parent="." unique_id=1181093061]
+[node name="LevelIndicator" type="ColorRect" parent="." unique_id=1181093061]
 visible = false
 z_index = 2
 offset_left = 1.0

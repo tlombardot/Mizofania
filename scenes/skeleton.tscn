@@ -255,27 +255,25 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_bnirc"]
 radius = 8.062258
 
-[node name="Skeleton" type="CharacterBody2D" unique_id=1450286213 groups=["ennemi"]]
+[node name="Skeleton" type="CharacterBody2D" unique_id=1450286213 groups=["enemy"]]
 z_index = 1
 y_sort_enabled = true
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_5pgwy")
-espece = "squelette"
+species = "skeleton"
 max_health = 40.0
 damage = 10.0
 attack_cooldown = 0.6
-attack_range = 20.0
 max_vitality_duration = 15.0
-ejection_range = 50.0
-xp_min = 30
-xp_max = 60
-attack_animations_list = Array[String](["attack1", "attack2", "death"])
+ejection_range = 60.0
+xp_min = 15
+xp_max = 30
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=822985345]
 position = Vector2(-1, -7)
 sprite_frames = SubResource("SpriteFrames_tilo8")
-animation = &"attack1"
+animation = &"walk"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2095617030]
@@ -291,13 +289,14 @@ radius = 5.0
 
 [node name="RayCast2D" type="RayCast2D" parent="." unique_id=1263634341]
 position = Vector2(0, -15)
+collision_mask = 3
 collide_with_bodies = false
 
 [node name="Timer" type="Timer" parent="." unique_id=575504019]
 wait_time = 5.0
 one_shot = true
 
-[node name="IndicateurNiveau" type="ColorRect" parent="." unique_id=2089157250]
+[node name="LevelIndicator" type="ColorRect" parent="." unique_id=2089157250]
 visible = false
 z_index = 2
 offset_left = 1.0
