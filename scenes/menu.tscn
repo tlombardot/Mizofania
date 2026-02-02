@@ -1771,7 +1771,7 @@ toggle_mode = true
 texture_normal = SubResource("AtlasTexture_7jp70")
 texture_pressed = SubResource("AtlasTexture_mxgkd")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=2109772842]
+[node name="MenuMusic" type="AudioStreamPlayer" parent="." unique_id=2109772842]
 stream = ExtResource("3_con2f")
 volume_db = -15.0
 autoplay = true

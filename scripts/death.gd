@@ -13,8 +13,8 @@ func _on_music_button_toggled(is_on: bool):
 func _on_sfx_button_toggled(is_on: bool):
 	AudioManager.toggle_sfx(is_on)
 	
-func _on_button_play_pressed():
+func _on_play_button_pressed():
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
-func _on_button_exit_pressed():
+func _on_exit_button_pressed():
 	get_tree().quit()

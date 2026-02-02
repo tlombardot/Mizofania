@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://khb4f1hf1v5h"]
 
-[ext_resource type="Script" uid="uid://cohrbm3ndux78" path="res://scripts/player.gd" id="1_3vyb7"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_3vyb7"]
 [ext_resource type="Texture2D" uid="uid://8mb6fcqfu2dy" path="res://assets/Characters/Skull/v2/skull_v2_1.png" id="2_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://b6p0cl515ahpy" path="res://assets/Characters/Skull/v2/skull_v2_2.png" id="3_tuyoq"]
 [ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Characters/Skull/v2/skull_v2_3.png" id="4_fjrip"]
@@ -151,11 +151,11 @@ size_flags_vertical = 0
 texture = SubResource("AtlasTexture_a8ls1")
 stretch_mode = 2
 
-[node name="CooldownUI" type="CanvasLayer" parent="." unique_id=871506566]
+[node name="Cooldown" type="CanvasLayer" parent="." unique_id=871506566]
 offset = Vector2(20, 600)
 transform = Transform2D(1, 0, 0, 1, 20, 600)
 
-[node name="CooldownGauge" type="TextureProgressBar" parent="CooldownUI" unique_id=1991994945]
+[node name="CooldownGauge" type="TextureProgressBar" parent="Cooldown" unique_id=1991994945]
 offset_right = 29.0
 offset_bottom = 29.0
 scale = Vector2(3, 3)
