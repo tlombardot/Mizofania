@@ -29,6 +29,7 @@ var target: Node2D = null
 var can_attack = true
 var last_position = Vector2.ZERO
 var stuck_timer = 0.0
+var parent_spawner = null
 
 @onready var sprite = $AnimatedSprite2D
 @onready var nav_agent = $NavigationAgent2D

@@ -1,0 +1,165 @@
+[gd_scene format=3 uid="uid://cp0glbdr8cf7a"]
+
+[ext_resource type="Script" uid="uid://dpmedm0gm42um" path="res://scripts/pause_menu.gd" id="1_1s2dm"]
+[ext_resource type="Texture2D" uid="uid://cbjyfn8ij8bka" path="res://assets/UIBundle/FreeHorrorUi.png" id="1_v4r4p"]
+[ext_resource type="Texture2D" uid="uid://dk5xjcfbfyuak" path="res://assets/Characters/Skull/v2/skull_v2_3.png" id="3_88e76"]
+[ext_resource type="Texture2D" uid="uid://ca63urg1btpcw" path="res://assets/Characters/Orc/Orc/Orc.png" id="4_knqa7"]
+[ext_resource type="Texture2D" uid="uid://7v4isjyex5dh" path="res://assets/Characters/Skeleton/Skeleton/Skeleton.png" id="5_71k7c"]
+[ext_resource type="Texture2D" uid="uid://c57duwknrncga" path="res://assets/Characters/Knight/Knight/Knight.png" id="5_v4r4p"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v4r4p"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(135, 229, 65, 7)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_knqa7"]
+atlas = ExtResource("3_88e76")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1s2dm"]
+atlas = ExtResource("5_v4r4p")
+region = Rect2(743, 426, 48, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_88e76"]
+atlas = ExtResource("4_knqa7")
+region = Rect2(242, 442, 23, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71k7c"]
+atlas = ExtResource("5_71k7c")
+region = Rect2(347, 442, 22, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4hnlu"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(70, 176, 52, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3o3g3"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(70, 160, 52, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h5b1d"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(0, 208, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_avs0h"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(48, 208, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ar2xs"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(0, 224, 40, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jkjer"]
+atlas = ExtResource("1_v4r4p")
+region = Rect2(48, 224, 40, 16)
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=202427329]
+process_mode = 3
+script = ExtResource("1_1s2dm")
+
+[node name="MenuRoot" type="Control" parent="." unique_id=1964989630]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3.13, 3.115)
+
+[node name="Background" type="ColorRect" parent="MenuRoot" unique_id=301909645]
+layout_mode = 0
+offset_right = 368.0
+offset_bottom = 208.0
+color = Color(0, 0, 0, 0.627451)
+
+[node name="Title" type="TextureRect" parent="MenuRoot" unique_id=241371244]
+layout_mode = 0
+offset_left = 123.0
+offset_top = 36.0
+offset_right = 188.0
+offset_bottom = 43.0
+scale = Vector2(2, 2)
+texture = SubResource("AtlasTexture_v4r4p")
+stretch_mode = 2
+
+[node name="SkullMask" type="TextureRect" parent="MenuRoot" unique_id=1941250175]
+layout_mode = 0
+offset_left = 278.0
+offset_top = 137.0
+offset_right = 294.0
+offset_bottom = 153.0
+rotation = -0.3298672
+scale = Vector2(3, 3)
+texture = SubResource("AtlasTexture_knqa7")
+stretch_mode = 2
+flip_h = true
+
+[node name="Knight" type="TextureRect" parent="MenuRoot" unique_id=1658687180]
+layout_mode = 0
+offset_left = 20.127794
+offset_top = 114.60674
+offset_right = 68.12779
+offset_bottom = 145.60675
+scale = Vector2(3, 3)
+texture = SubResource("AtlasTexture_1s2dm")
+
+[node name="Orc" type="TextureRect" parent="MenuRoot" unique_id=1060729375]
+layout_mode = 0
+offset_left = 79.1278
+offset_top = 162.60674
+offset_right = 102.1278
+offset_bottom = 177.60674
+scale = Vector2(3, 3)
+texture = SubResource("AtlasTexture_88e76")
+stretch_mode = 2
+flip_h = true
+
+[node name="Skeleton" type="TextureRect" parent="MenuRoot" unique_id=95940539]
+layout_mode = 0
+offset_left = 232.0
+offset_top = 163.0
+offset_right = 254.0
+offset_bottom = 178.0
+scale = Vector2(3, 3)
+texture = SubResource("AtlasTexture_71k7c")
+stretch_mode = 2
+flip_h = true
+
+[node name="ResumeButton" type="TextureButton" parent="MenuRoot" unique_id=1875514213]
+layout_mode = 0
+offset_left = 149.0
+offset_top = 87.0
+offset_right = 201.0
+offset_bottom = 102.0
+scale = Vector2(1.5, 1.5)
+texture_normal = SubResource("AtlasTexture_4hnlu")
+
+[node name="ExitButton" type="TextureButton" parent="MenuRoot" unique_id=662714913]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 116.0
+offset_right = 214.0
+offset_bottom = 131.0
+texture_normal = SubResource("AtlasTexture_3o3g3")
+
+[node name="MusicButton" type="TextureButton" parent="MenuRoot" unique_id=25515438]
+layout_mode = 0
+offset_left = 316.0
+offset_top = 3.0
+offset_right = 368.0
+offset_bottom = 19.0
+toggle_mode = true
+texture_normal = SubResource("AtlasTexture_h5b1d")
+texture_pressed = SubResource("AtlasTexture_avs0h")
+
+[node name="SFXButton" type="TextureButton" parent="MenuRoot" unique_id=1070171336]
+layout_mode = 0
+offset_left = 324.0
+offset_top = 21.0
+offset_right = 364.0
+offset_bottom = 37.0
+toggle_mode = true
+texture_normal = SubResource("AtlasTexture_ar2xs")
+texture_pressed = SubResource("AtlasTexture_jkjer")
+
+[connection signal="pressed" from="MenuRoot/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="MenuRoot/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="toggled" from="MenuRoot/MusicButton" to="." method="_on_music_button_toggled"]
+[connection signal="toggled" from="MenuRoot/SFXButton" to="." method="_on_sfx_button_toggled"]

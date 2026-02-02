@@ -16,7 +16,7 @@ func _ready():
 	timer.timeout.connect(_on_timer_timeout)
 	
 	if monster_scene == null:
-		push_error("Nos monster set in the spawner !")
+		push_error("No monster set in the spawner !")
 		timer.stop()
 
 func _on_timer_timeout():
@@ -28,6 +28,9 @@ func spawn_monster():
 		
 	if monster_scene:
 		var monster = monster_scene.instantiate()
+		
+		if "parent_spawner" in monster:
+			monster.parent_spawner = self
 		
 		var gap = Vector2.ZERO
 		if spawn_radius > 0:
@@ -43,3 +46,14 @@ func spawn_monster():
 func _on_monster_death():
 	current_monster -= 1
 	if current_monster < 0: current_monster = 0
+	
+func notify_possession_start(monster_node):
+	if monster_node.tree_exited.is_connected(_on_monster_death):
+		monster_node.tree_exited.disconnect(_on_monster_death)
+
+func notify_possession_end(new_monster_node):
+	new_monster_node.parent_spawner = self
+	new_monster_node.tree_exited.connect(_on_monster_death)
+
+func notify_possession_death():
+	_on_monster_death()

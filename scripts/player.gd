@@ -27,7 +27,7 @@ var current_level = 1
 var max_xp_current_level = 100
 
 var current_species = "mask"
-var first_appearance = true
+# "first_appearance" SUPPRIMÉ
 var active_mask = null
 var is_dying = false
 var input_locked = true
@@ -60,6 +60,7 @@ var death_scene_path = "res://scenes/death.tscn"
 var original_frames = null
 var original_scale = Vector2.ONE
 var original_shape = null
+var current_host_spawner = null
 
 func _ready():
 	add_to_group("player")
@@ -84,7 +85,7 @@ func _ready():
 	
 	await get_tree().create_timer(0.5).timeout
 	input_locked = false
-	devenir_masque(true)
+	devenir_masque()
 
 func _physics_process(_delta):
 	if current_state == State.MASK and is_instance_valid(active_mask) and active_mask is Node2D:
@@ -207,7 +208,16 @@ func eject_mask(body_is_dead: bool):
 			mob.current_vitality_time = vitality_timer.time_left
 			get_parent().add_child(mob)
 			dropped_mob = mob
+
+			if current_host_spawner != null and current_host_spawner.has_method("notify_possession_end"):
+				current_host_spawner.notify_possession_end(mob)
 	
+	if (body_is_dead or dropped_mob == null) and current_host_spawner != null:
+		if current_host_spawner.has_method("notify_possession_death"):
+			current_host_spawner.notify_possession_death()
+
+	current_host_spawner = null
+
 	if not body_is_dead:
 		fire_projectile_towards(get_global_mouse_position(), current_ejection_range, dropped_mob)
 	else:
@@ -217,6 +227,12 @@ func success_possession(new_host):
 	if possession_sound:
 		possession_sound.pitch_scale = randf_range(0.9, 1.1)
 		possession_sound.play()
+		
+	current_host_spawner = null
+	if "parent_spawner" in new_host and new_host.parent_spawner != null:
+		current_host_spawner = new_host.parent_spawner
+		if current_host_spawner.has_method("notify_possession_start"):
+			current_host_spawner.notify_possession_start(new_host)
 
 	is_attacking = false
 	can_attack = true
@@ -226,7 +242,6 @@ func success_possession(new_host):
 	collision_shape.set_deferred("disabled", false)
 	death_timer.stop()
 	current_state = State.POSSESSED
-	first_appearance = false
 	global_position = new_host.global_position
 	
 	health = new_host.health
@@ -327,9 +342,9 @@ func take_damage(amount, _attacker = null):
 func miss_possession(pos):
 	active_mask = null
 	global_position = pos
-	devenir_masque(false)
+	devenir_masque()
 
-func devenir_masque(is_safe):
+func devenir_masque():
 	is_attacking = false
 	can_attack = true
 	
@@ -342,8 +357,8 @@ func devenir_masque(is_safe):
 	sprite.play("idle"); sprite.speed_scale = 1.0
 	if original_shape: collision_shape.shape = original_shape
 	vitality_timer.stop()
-	if is_safe: first_appearance = true; death_timer.stop()
-	else: first_appearance = false; death_timer.start(time_survival_mask)
+	
+	death_timer.start(time_survival_mask)
 
 func _on_vitality_empty():
 	eject_mask(true)
